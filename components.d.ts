@@ -50,6 +50,8 @@ declare module 'vue' {
     UserList: typeof import('./src/components/usermanager/userList.vue')['default']
     UserListItem: typeof import('./src/components/usermanager/userListItem.vue')['default']
     UserMain: typeof import('./src/components/userMain.vue')['default']
+    Vtouchpage: typeof import('./src/components/vtouch/vtouchpage.vue')['default']
+    Vtouchpage2: typeof import('./src/components/vtouch/vtouchpage2.vue')['default']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }
   export interface ComponentCustomProperties {

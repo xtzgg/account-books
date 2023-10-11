@@ -16,8 +16,10 @@
     "element-plus": "^2.3.14",
     "pinia": "^2.1.6",
     "qs": "^6.11.2",
+    "vant": "^4.7.1",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "vue-touch": "^2.0.0-beta.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",

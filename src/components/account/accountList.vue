@@ -223,22 +223,6 @@ const accountSubmit = async () => {
   <div  class="infinite-list-wrapper" style="overflow-y: hidden visible; overflow-x: hidden;">
     <ul v-infinite-scroll="load" class="list" :infinite-scroll-disabled="disabled" :infinite-scroll-distance="1">
       <accountListItem :accountList="accountListData" @editAccountBooks2="editAccountBooks3" class="list-item">
-        <!-- <template #username>
-          {{ item.username }}
-        </template>
-        <template #createDate>{{ item.createDate}}</template>
-        <template #accountAmount>{{ item.accountAmount }}元</template>
-        <template #status>{{ item.status }}</template>
-        <template #endDate>{{ item.endDate }}</template>
-        <template #mobile>
-          {{ item.mobile }}
-        </template>
-        <template #address>
-          {{ item.address }}
-        </template>
-        <template #remark>
-          {{ item.remark }}
-        </template> -->
       </accountListItem>
     </ul>
     <p v-if="noMore" style="text-align: center; background-color: aliceblue; font-weight: 100;height:35px;line-height: 35px;">~已经见底啦~</p>

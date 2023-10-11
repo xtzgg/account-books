@@ -12,7 +12,7 @@
         filterable
         remote
         reserve-keyword
-        placeholder="请输入姓名"
+        placeholder="请输入测试关键字:小"
         remote-show-suffix
         :remote-method="remoteMethod"
         :loading="loading"

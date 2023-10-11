@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 
-import { computed, reactive, ref, nextTick } from 'vue'
+import { computed, reactive, ref, nextTick,onMounted } from 'vue'
 import { Calendar, Search } from '@element-plus/icons-vue'
 import { dividerProps } from 'element-plus';
+
+
+const active = ref('home');
 
 const input2 = ref('')
 
@@ -34,36 +37,33 @@ const changeColor = (n: number) => {
   <!-- 底部导航 -->
   <RouterView />
   <div>
-    <el-row :gutter="50" class="row-bg" justify="space-around" style="bottom:0; margin-left: -1rem;position:fixed;background-color:#a9e9b9;width: 100%;
-      ">
-      <el-col :span="8" style="text-align: center;">
-        <RouterLink to="/">
-          <el-button text type="primary" @click="changeColor(1)" :class="{ 'font_size_active': isActive1 }"
-            style="height: 100%;"><el-icon style="font-size:25px">
-              <House />
-            </el-icon></el-button>
-        </RouterLink>
-      </el-col>
-      <el-col :span="8" style="text-align: center;">
-        <RouterLink to="/user">
-          <el-button text type="primary" @click="changeColor(2)" style="height: 100%;"
-            :class="{ 'font_size_active': isActive2 }"><el-icon style="font-size:25px">
-              <User />
-            </el-icon></el-button>
-        </RouterLink>
-      </el-col>
-      <el-col :span="8" style="text-align: center;">
-        <RouterLink to="/accountsetting">
-          <el-button text type="primary" @click="changeColor(3)" style="height: 100%;"
-            :class="{ 'font_size_active': isActive3 }"><el-icon style="font-size:25px">
-              <Setting />
-            </el-icon></el-button>
-        </RouterLink>
-      </el-col>
-    </el-row>
+    <!-- <van-tabbar v-model="active">
+      <RouterLink to="/"><van-tabbar-item name="home" icon="home-o">标签</van-tabbar-item></RouterLink>
+      <RouterLink to="/user"><van-tabbar-item name="search" icon="search">标签</van-tabbar-item></RouterLink>
+      <RouterLink to="/accountsetting"><van-tabbar-item name="setting" icon="setting-o">标签</van-tabbar-item></RouterLink>
+    </van-tabbar> -->
+
+
+    <van-tabbar v-model="active">
+    <van-row :gutter="50" class="row-bg" justify="space-around" style="width: 100%;">
+      <van-col :span="8">
+        <RouterLink to="/"><van-tabbar-item name="home" icon="home-o" class="tabbar-item-self">主页</van-tabbar-item></RouterLink>
+      </van-col>
+      <van-col :span="8">
+        <RouterLink to="/user"><van-tabbar-item name="search" icon="search" class="tabbar-item-self">用户</van-tabbar-item></RouterLink>
+      </van-col>
+      <van-col :span="8">
+        <RouterLink to="/accountsetting"><van-tabbar-item name="setting" icon="setting-o" class="tabbar-item-self">设置</van-tabbar-item></RouterLink>
+      </van-col>
+    </van-row>
+    </van-tabbar>
   </div>
 </template>
 <style scoped>
+
+.tabbar-item-self {
+  padding-top: 0.4em;
+}
 /* header {
   line-height: 1.5;
   max-height: 100vh;
@@ -126,7 +126,7 @@ nav a:first-of-type {
     text-align: center;
     height: 400px;
     border-radius: 4px;
-    background: var(--el-color-primary-light-9);
+    background: var(--van-color-primary-light-9);
   } */
 .font_size_active {
   /* color: rgb(98, 217, 207) !important; */
