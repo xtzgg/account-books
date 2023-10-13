@@ -200,7 +200,7 @@ const accountUserEdit = ()=>{
   animation: none !important;
 }
 .infinite-list-wrapper {
-  height: 660px;
+  height: 35rem;
 }
 .infinite-list-wrapper .list {
   padding: 0;

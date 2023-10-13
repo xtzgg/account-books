@@ -1,11 +1,8 @@
-<!-- 多选属性multiple -->
+<!-- 搜索框 -->
 <template>
   <div class="flex flex-wrap"  style="width: 100%;">
-    <div>
-      <slot name="selectlabelname"></slot>
-    </div>
     <div class="m-20">
-      <!-- 强制刷新 $forceUpdate: 有些变量不在 state 上，但是你又想达到这个变量更新的时候，刷新 render-->
+      <!-- 强制刷新 $forceUpdate: 有些变量不在 state 上，但是你又想达到这个变量更新的时候，刷新 render -->
       <el-select
         :disabled="props.selectedDisabled"
         v-model="sea"
@@ -19,7 +16,7 @@
         style="width:100%"
         @change="selectNameFuc(sea)"
       >
-        <!-- :value 绑定不能value是对象，而非某个属性值 -->
+         <!-- :value 绑定不能value是对象，而非某个属性值 -->
         <el-option
           v-for="item in options"
           :key= "item.value"
@@ -34,6 +31,7 @@
 <script lang="ts" setup>
 import { onMounted, ref,defineProps, reactive, watchEffect,getCurrentInstance, type ComponentInternalInstance } from 'vue'
 import { AccountUserService, type AccountUser } from '@/api/api'
+
 
 let { proxy } = getCurrentInstance()  as ComponentInternalInstance
 

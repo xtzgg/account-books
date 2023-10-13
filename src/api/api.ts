@@ -7,16 +7,18 @@ import { request } from './axios'
 
 // 账单列表类型声明
 export interface AccountBook {
-    id: number,
-    userId: number,
+    id: number | null,
+    userId: number | null,
     username: string,
     mobile: string,
-    address: string,
+    area: string,
+    areaCode: string,
+    areaDetail: string,
     remark: string,
     endDate: string,
     accountAmount: string,
-    status: string,
-    createDate: string
+    status: number | null,
+    createDate: string | null
 }
 interface PageParams {
     pageNum: number,
@@ -42,6 +44,10 @@ export class AccoutListService {       // 账单接口
     static async delete(params: object) {
         return request('/api/accountbooks/accountbook/delete',params, 'post')
     }
+    // 账单详情
+    static async detail(params: object) {
+        return request('/api/accountbooks/accountbook/detail',params, 'get')
+    }
 }
 
 
@@ -49,8 +55,10 @@ export interface AccountUser {
     userId: number,
     username: string,
     mobile: string,
-    address: string,
-    remark: string,
+    area: string,
+    areaCode: string,
+    areaDetail: string,
+    remark: string | null,
     status: string,
     createDate: string
 }
@@ -76,6 +84,7 @@ export class AccountUserService {     // 账单用户接口
     static async delete(params: object) {
         return request('/api/accountbooks/accountuser/delete',params, 'post')
     }
+    
 }
 
 

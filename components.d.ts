@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Accountform: typeof import('./src/components/account/accountform.vue')['default']
     AccountList: typeof import('./src/components/account/accountList.vue')['default']
     AccountListItem: typeof import('./src/components/account/accountListItem.vue')['default']
     AccountMain: typeof import('./src/views/account/accountMain.vue')['default']
@@ -43,7 +44,7 @@ declare module 'vue' {
     IconTooling: typeof import('./src/components/icons/IconTooling.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Select: typeof import('./src/components/select.vue')['default']
+    Select: typeof import('./src/components/select/select.vue')['default']
     SelectSingle: typeof import('./src/components/select/selectSingle.vue')['default']
     Setting: typeof import('./src/components/setting.vue')['default']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
