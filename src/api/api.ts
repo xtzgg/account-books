@@ -3,8 +3,11 @@ import { request } from './axios'
 /**
  * @description -封装User类型的接口方法
  */
-
-
+export const accountBookStatusColumns = [
+    { text: '未结完', value: 1 },
+    { text: '已结完', value: 2 },
+    { text: '部分结', value: 3 }
+];
 // 账单列表类型声明
 export interface AccountBook {
     id: number | null,
@@ -18,7 +21,7 @@ export interface AccountBook {
     endDate: string,
     accountAmount: string,
     status: number | null,
-    createDate: string | null
+    createDate: string
 }
 interface PageParams {
     pageNum: number,
@@ -42,7 +45,7 @@ export class AccoutListService {       // 账单接口
     }
     // 账单删除
     static async delete(params: object) {
-        return request('/api/accountbooks/accountbook/delete',params, 'post')
+        return request('/api/accountbooks/accountbook/delete',params, 'get')
     }
     // 账单详情
     static async detail(params: object) {
@@ -50,16 +53,19 @@ export class AccoutListService {       // 账单接口
     }
 }
 
-
+export const accountUserStatusColumns = [
+    { text: '启用', value: 1 },
+    { text: '禁用', value: 0 }
+];
 export interface AccountUser {
-    userId: number,
+    userId: number | null,
     username: string,
     mobile: string,
     area: string,
     areaCode: string,
     areaDetail: string,
-    remark: string | null,
-    status: string,
+    remark: string,
+    status: number | null,
     createDate: string
 }
 
@@ -82,7 +88,11 @@ export class AccountUserService {     // 账单用户接口
     }
     // 用户删除
     static async delete(params: object) {
-        return request('/api/accountbooks/accountuser/delete',params, 'post')
+        return request('/api/accountbooks/accountuser/delete',params, 'get')
+    }
+    // 用户详情
+    static async detail(params: object) {
+        return request('/api/accountbooks/accountuser/detail',params, 'get')
     }
     
 }

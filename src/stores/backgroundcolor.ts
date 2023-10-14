@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 
 export const useGlobalColorStore = defineStore('GlobalStyle', () => {
@@ -6,3 +6,11 @@ export const useGlobalColorStore = defineStore('GlobalStyle', () => {
   return { color }
 })
 
+
+export const useTabbarActiveStore = defineStore('TabbarActive', {
+  state() {
+    return {
+      active: 'home'
+    }
+  }
+})

@@ -2,9 +2,8 @@
 
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-
-// 初始化主页
-const active = ref('home');
+import { useTabbarActiveStore } from './stores/backgroundcolor'
+const useGlobalColor = useTabbarActiveStore();
 
 </script>
 
@@ -12,7 +11,7 @@ const active = ref('home');
   <RouterView />
   <!-- 底部导航 -->
   <div>
-    <van-tabbar v-model="active">
+    <van-tabbar v-model="useGlobalColor.active">
       <van-row :gutter="50" class="row-bg" justify="space-around" style="width: 100%;">
         <van-col :span="8">
           <RouterLink to="/">
@@ -20,7 +19,7 @@ const active = ref('home');
           </RouterLink>
         </van-col>
         <van-col :span="8">
-          <RouterLink to="/user"><van-tabbar-item name="search" icon="search"
+          <RouterLink to="/user"><van-tabbar-item name="search" icon="friends-o"
               class="tabbar-item-self">用户</van-tabbar-item>
           </RouterLink>
         </van-col>

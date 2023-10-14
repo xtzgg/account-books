@@ -1,26 +1,4 @@
 <template>
-  <!-- <div class="about"> -->
-    <!-- <div>
-      <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
-        @select="handleSelect" style="width:100%">
-        <el-menu-item index="0">LOGO</el-menu-item>
-        <div class="flex-grow" />
-        <el-menu-item index="1">Processing Center</el-menu-item>
-        <el-sub-menu index="2">
-          <template #title>Workspace</template>
-          <el-menu-item index="2-1">item one</el-menu-item>
-          <el-menu-item index="2-2">item two</el-menu-item>
-          <el-menu-item index="2-3">item three</el-menu-item>
-          <el-sub-menu index="2-4">
-            <template #title>item four</template>
-            <el-menu-item index="2-4-1">item one</el-menu-item>
-            <el-menu-item index="2-4-2">item two</el-menu-item>
-            <el-menu-item index="2-4-3">item three</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-      </el-menu>
-    </div> -->
-    
   <!-- </div> -->
   <van-swipe-cell>
         <van-card num="2" price="2.00" desc="描述信息" title="商品标题" class="goods-card"
@@ -32,13 +10,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import VTouch from '../components/vtouch/vtouchpage2.vue'
 
-const activeIndex = ref('1')
-const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+import { ref, onMounted} from 'vue'
+import { useTabbarActiveStore } from '@/stores/backgroundcolor'
+// 全局样式
+const TabbarActive = useTabbarActiveStore();
+onMounted(()=>{
+  TabbarActive.active = 'setting'
+})
 </script>
 
 <style>

@@ -1,23 +1,30 @@
 <script setup lang="ts">
 
-// 左滑出现操作按钮
+import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance } from 'vue'
 import { showConfirmDialog, showNotify } from 'vant';
-import 'vant/es/dialog/style';
 import { useRouter } from 'vue-router'
 
-import { type AccountBook, accountBookStatusColumns, AccoutListService } from '@/api/api';
-import { ref, defineProps, defineEmits, type ComponentInternalInstance, computed } from 'vue'
+import { AccountUserService, type AccountUser } from '@/api/api';
 
 // 路由对象
 const router = useRouter()
-// 样式
+
 const width_left = ref(8);
 const width_right = ref(16);
 
 // 父组件传值给子组件：账单列表数据
 const props = defineProps<{
-  accountList: AccountBook[]
+  accountUserList: AccountUser[]
 }>()
+
+// 编辑用户
+const editAccountUser = (i: number) => {
+  const accountUser = props.accountUserList[i];
+  router.push({
+    path: '/accountuserform',
+    query: { 'userId': accountUser.userId, 'op': 'edit' }
+  })
+}
 
 // position 为关闭时点击的位置
 const beforeClose = (position: string, index: number) => {
@@ -25,7 +32,7 @@ const beforeClose = (position: string, index: number) => {
     case 'left':
     case 'edit':
       return new Promise((resolve) => {
-        editAccountBooks(index);
+        editAccountUser(index);
       }).then(() => {
         console.log("编辑成功")
       }).catch(() => { console.log("服务异常") });
@@ -37,26 +44,18 @@ const beforeClose = (position: string, index: number) => {
           title: '确定删除吗？',
         }).then(() => {
           // resolve(true)
-          deleteAccountBook(index);
+          deleteAccountUser(index);
         }).catch(() => resolve(false));
       });
   }
 }
 
-// 编辑账本
-const editAccountBooks = (i: number) => {
-  const accountBook = props.accountList[i];
-  router.push({
-    path: '/accountform',
-    query: { 'id': accountBook.id, 'op': 'edit' } // JSON.parse(JSON.stringify(accountUser))
+const deleteAccountUser = async (i: number) => {
+  const accountBook = props.accountUserList[i];
+  const res: any = await AccountUserService.delete({
+    'userId': accountBook.userId
   })
-}
-const deleteAccountBook = async (i: number) => {
-  const accountBook = props.accountList[i];
-  const res: any = await AccoutListService.delete({
-    'id': accountBook.id
-  })
-  if (res.status == 200 && res.data.code == 200) {
+  if(res.status == 200 && res.data.code == 200) {
     showNotify({
       type: 'success',
       message: '删除成功',
@@ -69,7 +68,7 @@ const deleteAccountBook = async (i: number) => {
   } else {
     showNotify({
       type: 'danger',
-      message: '删除失败：' + res.data.msg,
+      message: res.data.msg,
       duration: 3000,
     });
   }
@@ -77,7 +76,7 @@ const deleteAccountBook = async (i: number) => {
 </script>
 
 <template>
-  <van-cell v-for="(item, index) in accountList" style="padding: 0;">
+  <van-cell v-for="(item, index) in accountUserList" style="padding: 0;">
     <!-- 分割线 -->
     <van-divider style="margin: 0.2em 0">
       <van-icon name="notes-o" />
@@ -91,33 +90,7 @@ const deleteAccountBook = async (i: number) => {
           <van-col :span="width_right" class="col_right">
             {{ item.username }}
             <Edit style="width: 1.3rem; height: 1.3rem; float: right; margin-right: 0.1rem;"
-              @click="editAccountBooks(index)" />
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            制单日期：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.createDate }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            单据金额：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.accountAmount }}
-            <van-tag plain type="danger">{{ item.status == null ? '' :
-              accountBookStatusColumns[item.status - 1].text }}</van-tag>
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            截至日期：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.endDate }}
+              @click="editAccountUser(index)" />
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -133,7 +106,15 @@ const deleteAccountBook = async (i: number) => {
             联系地址：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ item.area == null ? '' : item.area + item.areaDetail == null ? '' : item.areaDetail }}
+            {{ item.area == null ? '' : item.area + item.areaDetail == null ? '' : item.areaDetail}}
+          </van-col>
+        </van-row>
+        <van-row :gutter="10">
+          <van-col :span="width_left" class="col_left">
+            创建日期：
+          </van-col>
+          <van-col :span="width_right" class="col_right">
+            {{ item.createDate }}
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -152,7 +133,7 @@ const deleteAccountBook = async (i: number) => {
     </van-swipe-cell>
   </van-cell>
 </template>
-
+  
 <style scoped>
 .item {
   margin-top: 0.1rem;
@@ -168,3 +149,4 @@ const deleteAccountBook = async (i: number) => {
   text-align: left;
 }
 </style>
+  

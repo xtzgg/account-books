@@ -1,9 +1,13 @@
 <script setup lang="ts">
 
-import AccountLists from '../components/account/accountList.vue'
-import { ref } from 'vue'
-
-
+import { onMounted } from 'vue';
+import AccountList from '../components/account/accountList.vue'
+import { useTabbarActiveStore } from '@/stores/backgroundcolor'
+// 全局样式
+const TabbarActive = useTabbarActiveStore();
+onMounted(()=>{
+  TabbarActive.active = 'home'
+})
 </script>
 
 <template>

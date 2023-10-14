@@ -84,3 +84,16 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* 全局的CSS样式 vant4 */
+:root:root {
+  /* Primary Button 会变成指定颜色 */
+  --van-button-primary-background: #00d0d4;
+  --van-button-primary-border-color: #00d0d4;
+  /* navbar */
+  --van-nav-bar-icon-color: #00d0d4;
+  --van-nav-bar-text-color: #00d0d4;
+  /* 回到顶部 */
+  --van-back-top-background: #00d0d4;
+}
+

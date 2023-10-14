@@ -6,9 +6,9 @@ import { ref, onMounted } from 'vue';
 import { areaList } from '@vant/area-data';
 import { showConfirmDialog, showNotify } from 'vant';
 
-import { AccountUserService, type AccountUser, AccoutListService, type AccountBook } from '@/api/api'
+import { AccountUserService, type AccountUser, AccoutListService, type AccountBook,accountBookStatusColumns } from '@/api/api'
 
-import { useRouter,useRoute } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 // 系统对象
 const router = useRouter()
@@ -23,20 +23,18 @@ onMounted(() => {
     // 异步获取人员列表
     searchAccountUserListFuc('')
     // 编辑路由传值初始化 accounForm
-    initAccountBooks(Number(route.query.id));
+    if (route.query.op === 'edit') {
+        initAccountBooks(Number(route.query.id));
+    }
 })
 
 // 初始化账本编辑信息
-const initAccountBooks = async (id: number)=>{
-    const res: any = await AccoutListService.detail({'id': id});
-    if(res.data) {
+const initAccountBooks = async (id: number) => {
+    const res: any = await AccoutListService.detail({ 'id': id });
+    if (res.data) {
         Object.assign(accounForm, res.data);
-        userResult.value = accounForm.username
-        statusResult.value = accounForm.status
-        endDateResult.value = accounForm.endDate
-        areaResult.value = accounForm.area
-        accounForm.status = 1;
-        console.log(accounForm)
+        // 组件绑定input回显
+        formShowFuc();
     }
 }
 
@@ -52,8 +50,11 @@ const endDateshowCalendar = ref(false);
 const showArea = ref(false);
 const loading = ref(true);
 const userResult = ref('');
-const statusResult = ref<number | null>();
+const statusResult = ref('');
 const endDateResult = ref('');
+// 组件日期范围
+const minDate = new Date(2023, 9, 1);
+const maxDate = new Date(2025, 11, 31);
 const amountFormatter = (value: string) => value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const areaResult = ref('');
 const searchValue = ref('')
@@ -74,7 +75,7 @@ const accounForm: AccountBook = reactive({
     endDate: '',
     mobile: '',
     area: '',
-    areaCode:'',
+    areaCode: '',
     areaDetail: '',
     remark: '',
     createDate: ''
@@ -94,18 +95,30 @@ const onConfirmUser = ({ selectedOptions }: any) => {
     // 隐藏
     showUserPicker.value = false;
 };
-const assignAndInitComponent = (accountUser: AccountUser)=>{
+const assignAndInitComponent = (accountUser: AccountUser) => {
     // 赋值
     accounForm.userId = accountUser.userId
     accounForm.username = accountUser.username
     accounForm.area = accountUser.area
     accounForm.areaDetail = accountUser.areaDetail
     accounForm.mobile = accountUser.mobile
+    // 组件绑定input回显
+    formShowFuc();
     // 组件回显 TODO 需要地区码
-    if(accountUser.area){
+    if (accountUser.area) {
 
     }
 }
+// 回显表单值
+const formShowFuc = () => {
+    userResult.value = accounForm.username
+    const status = getStatus(accounForm.status);
+    statusResult.value = status == null ? '' : status.text;
+    endDateResult.value = accounForm.endDate
+    areaResult.value = accounForm.area
+    console.log(accounForm)
+}
+// 组件回显
 
 // 截至日期：年月日
 const onConfirmEndDate = (value: any) => {
@@ -123,16 +136,16 @@ const onConfirmArea = ({ selectedOptions }: any) => {
     accounForm.areaCode = selectedOptions.map((item: any) => item.value).join('/');
 };
 
-const searchAccountUserListFuc = (value: string)=> {
-   // 异步获取
-   loading.value= true;
-   setTimeout(() => {
+const searchAccountUserListFuc = (value: string) => {
+    // 异步获取
+    loading.value = true;
+    setTimeout(() => {
         accountUserListFuc(value)
         loading.value = false;
     }, 1000);
 }
 // 获取人员信息数据
-const accountUserListFuc =  async (value: string) => {
+const accountUserListFuc = async (value: string) => {
     const res: any = await AccountUserService.list({
         "pageNum": 1,
         "pageSize": 1000,
@@ -151,12 +164,14 @@ const accountUserListFuc =  async (value: string) => {
         });
     }
 }
-// 结算状态
-const statusListColumns = [
-    { text: '未结完', value: 1 },
-    { text: '已结完', value: 2 },
-    { text: '部分结', value: 3 }
-];
+// 根据code结算状态获取
+const getStatus = (value: number | null) => {
+    if (value != null) {
+        return accountBookStatusColumns[value - 1]
+    }
+    return null;
+}
+
 // 结算状态选择
 const onConfirmStatus = ({ selectedOptions }: any) => {
 
@@ -179,39 +194,48 @@ const onSubmit = (values: any) => {
 };
 
 const accountSubmit = async () => {
-  console.log(accounForm)
-  const res: any = await AccoutListService.add({
-    "id": accounForm.id,
-    "userId": accounForm.userId,
-    "username": accounForm.username,
-    "mobile": accounForm.mobile,
-    "area": accounForm.area,
-    "areaCode": accounForm.areaCode,
-    "areaDetail": accounForm.areaDetail,
-    "endDate": accounForm.endDate,
-    "accountAmount": accounForm.accountAmount,
-    "status": accounForm.status,
-    "remark": accounForm.remark
-  })
-  // 编辑成功或失败
-  // 关闭遮罩层
-  overlayShow.value = false
-  if (res.status === 200) {
-    // 通知
-    showNotify({
-      type: 'success',
-      message: '保存成功',
-      duration: 1000,
-    });
-    // 跳转到上一页面
-    router.go(-1);
-  } else {
-    showNotify({
-      type: 'danger',
-      message: '保存失败',
-      duration: 1000,
-    });
-  }
+    console.log(accounForm)
+    const params = {
+        "id": accounForm.id,
+        "userId": accounForm.userId,
+        "username": accounForm.username,
+        "mobile": accounForm.mobile,
+        "area": accounForm.area,
+        "areaCode": accounForm.areaCode,
+        "areaDetail": accounForm.areaDetail,
+        "endDate": accounForm.endDate,
+        "accountAmount": accounForm.accountAmount,
+        "status": accounForm.status,
+        "remark": accounForm.remark
+    }
+    let res: any;
+    if(route.query.id){
+        params.id = Number(route.query.id);
+        res = await AccoutListService.edit(params)
+    } else {
+        res = await AccoutListService.add(params)
+    }
+    // 编辑成功或失败
+    // 关闭遮罩层
+    overlayShow.value = false
+    if (res.status === 200) {
+        // 通知
+        showNotify({
+            type: 'success',
+            message: '保存成功',
+            duration: 1000,
+        });
+        // 延迟1s后跳转到上一页面
+        setTimeout(()=>{
+            router.go(-1);
+        },1000)
+    } else {
+        showNotify({
+            type: 'danger',
+            message: '保存失败',
+            duration: 1000,
+        });
+    }
 }
 
 </script>
@@ -227,15 +251,15 @@ const accountSubmit = async () => {
                     :loading="loading">
                     <template #title>
                         <!-- left-icon="" -->
-                        <van-search v-model="searchValue" placeholder="请输入人员姓名"  @search="searchAccountUserListFuc"/>
+                        <van-search v-model="searchValue" placeholder="请输入人员姓名" @search="searchAccountUserListFuc" />
                     </template>
                 </van-picker>
             </van-popup>
             <!-- 结算状态 -->
             <van-field v-model="statusResult" is-link readonly name="status" label="结算状态" placeholder="点击选择结算状态"
-                @click="showStatusPicker = true" :rules="[{ required: true, message: '请选择结算状态' }]"/>
+                @click="showStatusPicker = true" :rules="[{ required: true, message: '请选择结算状态' }]" />
             <van-popup v-model:show="showStatusPicker" position="bottom">
-                <van-picker title="结算状态" :columns="statusListColumns" @confirm="onConfirmStatus"
+                <van-picker title="结算状态" :columns="accountBookStatusColumns" @confirm="onConfirmStatus"
                     @cancel="showStatusPicker = false" :loading="loading" />
             </van-popup>
             <!-- 结算金额 -->
@@ -244,22 +268,23 @@ const accountSubmit = async () => {
             <!-- 截至日期 -->
             <van-field v-model="endDateResult" is-link readonly name="calendar" label="截至日期" placeholder="点击选择日期"
                 @click="endDateshowCalendar = true" />
-            <van-calendar v-model:show="endDateshowCalendar" :defaultDate="defaultDate" @confirm="onConfirmEndDate" />
+            <van-calendar v-model:show="endDateshowCalendar" :min-date="minDate" :max-date="maxDate"
+                :defaultDate="defaultDate" @confirm="onConfirmEndDate" />
 
-            <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话"
-             />
+            <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" />
             <!-- 联系地址 -->
             <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
                 @click="showArea = true" />
             <van-popup v-model:show="showArea" position="bottom">
                 <van-area :area-list="areaList" @confirm="onConfirmArea" @cancel="showArea = false" />
             </van-popup>
-            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址"
-                />
-            <van-field  type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark" name="remark" label="备注" placeholder="请输入备注信息" />
+            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
+                v-model="accounForm.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
+            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark"
+                name="remark" label="备注" placeholder="请输入备注信息" />
         </van-cell-group>
         <div style="margin: 16px;">
-            <van-button round block color="#00d0d4" native-type="submit">
+            <van-button round block type="primary" native-type="submit">
                 提交
             </van-button>
         </div>
