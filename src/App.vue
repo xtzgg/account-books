@@ -10,7 +10,7 @@ const useGlobalColor = useTabbarActiveStore();
 <template>
   <RouterView />
   <!-- 底部导航 -->
-  <div>
+  <div >
     <van-tabbar v-model="useGlobalColor.active">
       <van-row :gutter="50" class="row-bg" justify="space-around" style="width: 100%;">
         <van-col :span="8">
@@ -19,12 +19,12 @@ const useGlobalColor = useTabbarActiveStore();
           </RouterLink>
         </van-col>
         <van-col :span="8">
-          <RouterLink to="/user"><van-tabbar-item name="search" icon="friends-o"
+          <RouterLink to="/accountuser"><van-tabbar-item name="search" icon="friends-o"
               class="tabbar-item-self">用户</van-tabbar-item>
           </RouterLink>
         </van-col>
         <van-col :span="8">
-          <RouterLink to="/accountsetting"><van-tabbar-item name="setting" icon="setting-o"
+          <RouterLink to="/user"><van-tabbar-item name="setting" icon="setting-o"
               class="tabbar-item-self">设置</van-tabbar-item>
           </RouterLink>
         </van-col>
@@ -32,7 +32,7 @@ const useGlobalColor = useTabbarActiveStore();
     </van-tabbar>
   </div>
 </template>
-<style scoped>
+<style scoped type="css">
 .tabbar-item-self {
   padding-top: 0.4em;
 }

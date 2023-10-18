@@ -1,12 +1,13 @@
 <script setup lang="ts">
 
 // 左滑出现操作按钮
-import { showConfirmDialog, showNotify } from 'vant';
+import { showConfirmDialog, showNotify,showToast } from 'vant';
 import 'vant/es/dialog/style';
 import { useRouter } from 'vue-router'
 
 import { type AccountBook, accountBookStatusColumns, AccoutListService } from '@/api/api';
 import { ref, defineProps, defineEmits, type ComponentInternalInstance, computed } from 'vue'
+import { Edit } from '@element-plus/icons-vue'
 
 // 路由对象
 const router = useRouter()
@@ -67,10 +68,15 @@ const deleteAccountBook = async (i: number) => {
       location.reload();
     }, 1000)
   } else {
-    showNotify({
-      type: 'danger',
-      message: '删除失败：' + res.data.msg,
-      duration: 3000,
+    // showNotify({
+    //   type: 'danger',
+    //   message: '删除失败：' + res.data.msg,
+    //   duration: 3000,
+    // });
+    showToast({
+        type:'fail',
+        message: '删除失败：' + res.data.msg,
+        position: 'top',
     });
   }
 }
@@ -90,7 +96,7 @@ const deleteAccountBook = async (i: number) => {
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.username }}
-            <Edit style="width: 1.3rem; height: 1.3rem; float: right; margin-right: 0.1rem;"
+            <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
               @click="editAccountBooks(index)" />
           </van-col>
         </van-row>

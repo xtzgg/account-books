@@ -12,15 +12,15 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
-    "@vant/area-data": "^1.5.0",
+    "amfe-flexible": "^2.2.1",
     "axios": "^1.5.1",
     "element-plus": "^2.3.14",
     "pinia": "^2.1.6",
+    "postcss-pxtorem": "^6.0.0",
     "qs": "^6.11.2",
     "vant": "^4.7.1",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4",
-    "vue-touch": "^2.0.0-beta.4"
+    "vue-router": "^4.2.4"
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.2",

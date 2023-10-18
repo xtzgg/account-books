@@ -98,31 +98,31 @@ const searchAccoutBooks = () => {
 
 <template>
   <van-cell-group>
-    <van-cell class="group-lay-out">
+    <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
-      <van-search v-model="inputSearch" show-action clearable :background="GlobalColor.color" placeholder="请输入姓名、手机号、备注"
-        @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
-        <template #action>
-          <div @click="searchAccoutBooks">搜索</div>
-        </template>
-      </van-search>
+      <div class="">
+        <van-search v-model="inputSearch" show-action clearable :background="GlobalColor.color" placeholder="请输入姓名、手机号、备注"
+          @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
+          <template #action>
+            <div @click="searchAccoutBooks">搜索</div>
+          </template>
+        </van-search>
+      </div>
     </van-cell>
-    <van-cell class="group-lay-out">
+    <van-cell class="group-lay-out demo-input-suffix">
       <!-- 总计 -->
-      <div class="demo-input-suffix" style="background-color: aliceblue; font-size:1rem;margin-top: 0.8em;">
-        <van-row :gutter="10" class="row-bg" justify="space-between">
+        <van-row :gutter="10"  justify="space-between">
           <van-col :span="7" style="text-align: left;">
-            <span style="padding-left:0.25rem;line-height: 2.5rem;font-weight: bold; font-size:1rem;text-align: left;">
+            <span style="padding-left:0.25rem;font-weight: bold; text-align: left;">
             共{{ total }}条</span>
           </van-col>
           <van-col :span="10" style="text-align: center">
-            <span style="line-height: 2.5rem;color: red; font-size:1rem;"> {{ totalAmount }}￥</span>
+            <span style="color: red;"> {{ totalAmount }}￥</span>
           </van-col>
           <van-col :span="7">
-            <van-cell to="/accountform?op=add" style="padding: 0.5rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
+            <van-cell to="/accountform?op=add" style="padding: 0.25rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
           </van-col>
         </van-row>
-      </div>
     </van-cell>
     <van-cell class="group-lay-out">
       <div class="infinite-list-wrapper">
@@ -139,13 +139,26 @@ const searchAccoutBooks = () => {
   </van-cell-group>
 </template>
 
-<style scoped>
+<style scoped type="css">
+.demo-input-search {
+  height: 8vh;
+}
 .infinite-list-wrapper {
-  min-height: 20rem;
-  max-height: 39rem;
-  height: 92%;
+  /* min-height: 13.5rem; */
+  /* max-height: 17rem; */
+  /* max-height: 50vh; g4y*/
+  height: calc(80vh - 0.7rem);
   overflow-y: hidden visible;
   overflow-x: hidden;
+}
+.demo-input-suffix {
+  /* height: 1rem; */
+  background-color: aliceblue; 
+  font-size:0.4rem;
+  /* margin-top: 0.8rem; */
+  line-height: 6vh;
+  height: 6vh;
+  margin-top: 0.2rem;
 }
 
 .group-lay-out {

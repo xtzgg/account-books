@@ -58,7 +58,7 @@ export function request(url = '', params = {}, type = 'POST') {
       })
     }
     //处理返回
-    promise.then(res => {
+    promise?.then(res => {
       resolve(res)
     }).catch(err => {
       reject(err)

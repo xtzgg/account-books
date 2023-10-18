@@ -2,7 +2,6 @@
 import UserListItem from './userListItem.vue'
 import { computed, ref,reactive,onMounted} from 'vue'
 import 'vant/es/dialog/style';
-import { Calendar, Search, Plus } from '@element-plus/icons-vue'
 import { AccountUserService, type AccountUser } from '@/api/api'
 // 样式组件
 import { useGlobalColorStore } from '@/stores/backgroundcolor'
@@ -11,7 +10,6 @@ const GlobalColor = useGlobalColorStore()
 
 // 初始化加载
 const dialogFormVisible = ref(false)
-const formLabelWidth = '80px'
 
 const pageNum = ref(1)
 const pageSize = ref(8)
@@ -115,7 +113,7 @@ const accountUserEdit = ()=>{
 
 <template>
   <van-cell-group>
-    <van-cell class="group-lay-out">
+    <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
       <van-search v-model="inputSearch" show-action clearable :background="GlobalColor.color" placeholder="请输入姓名、手机号、备注"
         @keydown.enter="searchAccoutUser" @search="searchAccoutUser" @clear="searchAccoutUser">
@@ -126,14 +124,14 @@ const accountUserEdit = ()=>{
     </van-cell>
     <van-cell class="group-lay-out">
       <!-- 总计 -->
-      <div class="demo-input-suffix" style="background-color: aliceblue; font-size:1rem;margin-top: 0.8em;">
-        <van-row :gutter="10" class="row-bg" justify="space-between">
+      <div class="demo-input-suffix">
+        <van-row :gutter="10" justify="space-between">
           <van-col :span="15" style="text-align: left;">
-            <span style="padding-left:0.25rem;line-height: 2.5rem;font-weight: bold; font-size:1rem;text-align: left;">
+            <span style="padding-left:0.25rem;font-weight: bold;text-align: left;">
             共{{ total }}条</span>
           </van-col>
           <van-col :span="9">
-            <van-cell to="/accountuserform?op=add" style="padding: 0.5rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
+            <van-cell to="/accountuserform?op=add" style="padding: 0.25rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
           </van-col>
         </van-row>
       </div>
@@ -154,12 +152,26 @@ const accountUserEdit = ()=>{
 
 
 <style scoped>
+.demo-input-search {
+  height: 8vh;
+}
 .infinite-list-wrapper {
-  min-height: 35rem;
-  max-height: 39rem;
-  height: 100%;
+    /* min-height: 13.5rem; */
+  /* max-height: 17rem; */
+  /* max-height: 50vh; */
+  height: calc(80vh - 0.7rem);
   overflow-y: hidden visible;
   overflow-x: hidden;
+}
+
+.demo-input-suffix {
+  /* height: 1rem; */
+  background-color: aliceblue; 
+  font-size:0.4rem;
+  /* margin-top: 0.8rem; */
+  line-height: 6vh;
+  height: 6vh;
+  margin-top: 0.2rem;
 }
 
 .group-lay-out {

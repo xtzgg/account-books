@@ -3,8 +3,8 @@
 import { reactive } from 'vue';
 import { ref, onMounted } from 'vue';
 
-import { areaList } from '@vant/area-data';
-import { showConfirmDialog, showNotify } from 'vant';
+import { areaList } from '../../common/area';
+import { showConfirmDialog, showNotify, showToast } from 'vant';
 
 import { AccountUserService, type AccountUser, AccoutListService, type AccountBook,accountBookStatusColumns } from '@/api/api'
 
@@ -159,8 +159,10 @@ const accountUserListFuc = async (value: string) => {
         userListColumns.value = [];
         userMap.value.clear;
         res.data.records.forEach((element: AccountUser) => {
-            userMap.value.set(element.userId, element);
-            userListColumns.value.push({ value: element.userId, text: `${element.username}` })
+            if(element.userId != null){
+                userMap.value.set(element.userId, element);
+                userListColumns.value.push({ value: element.userId, text: `${element.username}` })
+            }
         });
     }
 }
@@ -220,10 +222,15 @@ const accountSubmit = async () => {
     overlayShow.value = false
     if (res.status === 200) {
         // 通知
-        showNotify({
-            type: 'success',
+        // showNotify({
+        //     type: 'success',
+        //     message: '保存成功',
+        //     duration: 1000,
+        // });
+        showToast({
+            type:'success',
             message: '保存成功',
-            duration: 1000,
+            position: 'top',
         });
         // 延迟1s后跳转到上一页面
         setTimeout(()=>{
@@ -238,16 +245,28 @@ const accountSubmit = async () => {
     }
 }
 
+const showUserPickerClick = ()=>{
+    console.log(searchValue.value);
+    accountUserListFuc(searchValue.value);
+    showUserPicker.value = true;
+}
+const addUser = ()=>{
+    router.push({
+    path: '/accountuserform',
+    query: {'op': 'add' }
+  })
+}
 </script>
 <template>
     <van-nav-bar title="添加账本" left-text="返回" left-arrow @click-left="onClickLeft" />
     <van-form @submit="onSubmit">
         <van-cell-group inset>
             <!-- 用户名 -->
-            <van-field v-model="userResult" is-link readonly name="username" label="姓名" placeholder="点击选择人员"
-                @click="showUserPicker = true" :rules="[{ required: true, message: '请选择人员信息' }]" />
+            <van-field v-model="userResult" is-link readonly name="username"
+            label="姓名" placeholder="点击选择人员"
+                @click="showUserPickerClick" :rules="[{ required: true, message: '请选择人员信息' }]" />
             <van-popup v-model:show="showUserPicker" position="bottom">
-                <van-picker :columns="userListColumns" @confirm="onConfirmUser" @cancel="showUserPicker = false"
+                <van-picker :columns="userListColumns" @confirm="onConfirmUser" @cancel="addUser" cancel-button-text="去添加"
                     :loading="loading">
                     <template #title>
                         <!-- left-icon="" -->

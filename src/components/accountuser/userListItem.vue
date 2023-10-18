@@ -2,6 +2,7 @@
 
 import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance } from 'vue'
 import { showConfirmDialog, showNotify } from 'vant';
+import { Edit } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 import { AccountUserService, type AccountUser } from '@/api/api';
@@ -89,7 +90,7 @@ const deleteAccountUser = async (i: number) => {
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.username }}
-            <Edit style="width: 1.3rem; height: 1.3rem; float: right; margin-right: 0.1rem;"
+            <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
               @click="editAccountUser(index)" />
           </van-col>
         </van-row>

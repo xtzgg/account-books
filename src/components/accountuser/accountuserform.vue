@@ -3,7 +3,7 @@
 import { reactive } from 'vue';
 import { ref, onMounted } from 'vue';
 
-import { areaList } from '@vant/area-data';
+import { areaList } from '../../common/area';
 import { showConfirmDialog, showNotify } from 'vant';
 
 import { type AccountUser, accountUserStatusColumns, AccountUserService } from '@/api/api'
@@ -157,8 +157,8 @@ const accountSubmit = async () => {
             <!-- 用户名 -->
             <van-field v-model="accountUser.username" name="username" label="姓名" placeholder="请输入姓名" />
             <!-- 状态 -->
-            <van-field v-model="statusResult" is-link readonly name="status" label="结算状态" placeholder="点击选择用户状态"
-                @click="showStatusPicker = true" :rules="[{ required: true, message: '请选择结算状态' }]" />
+            <van-field v-model="statusResult" is-link readonly name="status" label="用户状态" placeholder="点击选择用户状态"
+                @click="showStatusPicker = true" :rules="[{ required: true, message: '请选择用户状态' }]" />
             <van-popup v-model:show="showStatusPicker" position="bottom">
                 <van-picker title="用户状态" :columns="accountUserStatusColumns" @confirm="onConfirmStatus"
                     @cancel="showStatusPicker = false" :loading="false" />
