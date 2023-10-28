@@ -5,9 +5,8 @@ import { showConfirmDialog, showNotify,showToast } from 'vant';
 import 'vant/es/dialog/style';
 import { useRouter } from 'vue-router'
 
-import { type AccountBook, accountBookStatusColumns, AccoutListService } from '@/api/api';
-import { ref, defineProps, defineEmits, type ComponentInternalInstance, computed } from 'vue'
-import { Edit } from '@element-plus/icons-vue'
+import { type AccountBook, BookStatus, AccoutListService } from '@/api/api';
+import { ref, defineProps } from 'vue'
 
 // 路由对象
 const router = useRouter()
@@ -48,7 +47,7 @@ const beforeClose = (position: string, index: number) => {
 const editAccountBooks = (i: number) => {
   const accountBook = props.accountList[i];
   router.push({
-    path: '/accountform',
+    path: '/accountedit',
     query: { 'id': accountBook.id, 'op': 'edit' } // JSON.parse(JSON.stringify(accountUser))
   })
 }
@@ -80,24 +79,34 @@ const deleteAccountBook = async (i: number) => {
     });
   }
 }
+
+const container = ref();
 </script>
 
 <template>
-  <van-cell v-for="(item, index) in accountList" style="padding: 0;">
+  <van-cell v-for="(item, index) in accountList" style="padding: 0;" :to="'/accountdetail?id='+ item.id">
     <!-- 分割线 -->
-    <van-divider style="margin: 0.2em 0">
+    <!-- <van-divider style="margin: 0.2em 0">
       <van-icon name="notes-o" />
-    </van-divider>
-    <van-swipe-cell>
-      <div class="item">
+    </van-divider> -->
+    <van-swipe-cell class="van_list_s">
+      <div class="item" ref="container" >
+        <!-- 粘性状态标识 -->
+        <van-sticky :container="container" :offset-right="20">
+          <div style="position: absolute;right: 0.5rem;">
+            <div class="triangle2" style="font-weight: bold;">{{ item.status == null ? '' :  
+              BookStatus.get(item.status)}}</div>
+            <div class="triangle"></div>
+          </div>
+        </van-sticky>
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
             <van-icon name="manager" />姓名：
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.username }}
-            <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
-              @click="editAccountBooks(index)" />
+            <!-- <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
+              @click="editAccountBooks(index)" /> -->
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -115,7 +124,7 @@ const deleteAccountBook = async (i: number) => {
           <van-col :span="width_right" class="col_right">
             {{ item.accountAmount }}
             <van-tag plain type="danger">{{ item.status == null ? '' :
-              accountBookStatusColumns[item.status - 1].text }}</van-tag>
+              BookStatus.get(item.status) }}</van-tag>
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -159,13 +168,15 @@ const deleteAccountBook = async (i: number) => {
   </van-cell>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .item {
   margin-top: 0.1rem;
   margin-bottom: 0.1rem;
-  background-color: rgb(239 249 249);
+  background-color: #fff;
 }
-
+.van_list_s {
+  background-color: $van_list_background;
+}
 .col_left {
   font-weight: bold;
 }
@@ -173,4 +184,21 @@ const deleteAccountBook = async (i: number) => {
 .col_right {
   text-align: left;
 }
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-top: 0.5rem solid $base_background;
+    border-right: 0.7rem solid transparent;
+    border-left: 0.7rem solid transparent;
+}
+
+.triangle2 {
+    background-color: $base_background;
+    width: 1.4rem;
+    height: 0.8rem;
+    text-align: center;
+    line-height: 1rem;
+}
+
 </style>

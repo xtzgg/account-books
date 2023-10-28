@@ -3,7 +3,7 @@
 
 </script>
 <template>
-    <van-cell-group inset>
+    <van-cell-group inset style="margin:0">
         <!-- 个人头像 -->
         <van-cell center style="background-color: #eff9f9;">
             <div style="text-align: center;">
@@ -40,4 +40,6 @@
         <van-cell title="设置" value="内容" is-link />
     </van-cell-group>
 </template>
-<style scoped></style>
+<style scoped>
+
+</style>

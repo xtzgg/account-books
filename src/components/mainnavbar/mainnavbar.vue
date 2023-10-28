@@ -2,15 +2,14 @@
 
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import { useTabbarActiveStore } from './stores/backgroundcolor'
+import { useTabbarActiveStore } from '../../stores/backgroundcolor'
+
 const useGlobalColor = useTabbarActiveStore();
 
 </script>
-
 <template>
-  <RouterView />
-  <!-- 底部导航 -->
-    <!-- <van-tabbar v-model="useGlobalColor.active" active-color="#00d0d4">
+<!-- 底部导航 -->
+<van-tabbar v-model="useGlobalColor.active">
       <van-row :gutter="0" class="row-bg" justify="space-around" style="width: 100%;">
         <van-col :span="4">
           <RouterLink to="/">
@@ -23,12 +22,12 @@ const useGlobalColor = useTabbarActiveStore();
           </RouterLink>
         </van-col>
         <van-col :span="5">
-          <RouterLink to="/accountuser"><van-tabbar-item name="editBook" icon="add-square"
+          <RouterLink to="/accountadd"><van-tabbar-item name="editBook" icon="add-square"
               class="tabbar-item-self">记账</van-tabbar-item>
           </RouterLink>
         </van-col>
         <van-col :span="4">
-          <RouterLink to="/accountuser"><van-tabbar-item name="search" icon="chart-trending-o"
+          <RouterLink to="/accountstatis"><van-tabbar-item name="accountstatis" icon="chart-trending-o"
               class="tabbar-item-self">统计</van-tabbar-item>
           </RouterLink>
         </van-col>
@@ -38,10 +37,8 @@ const useGlobalColor = useTabbarActiveStore();
           </RouterLink>
         </van-col>
       </van-row>
-    </van-tabbar> -->
+    </van-tabbar>
 </template>
-<style scoped type="css">
-.tabbar-item-self {
-  padding-top: 0.4em;
-}
+<style scoped lang="scss">
+
 </style>

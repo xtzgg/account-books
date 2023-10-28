@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AccountMain from '../views/accountMain.vue'
 import UserMain from '../views/userMain.vue'
 import AccountSetting from '../views/accountSetting.vue'
-import User from '../components/user/user.vue'
+import AccountAdd from '../views/accountadd.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,13 +45,21 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/UserMain.vue')
     },{
-      path: '/user',
-      name: 'user',
-      component: User
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/UserMain.vue')
+      path: '/accountadd',
+      name: 'accountadd',
+      component: AccountAdd
+    },{
+      path: '/accountstatis',
+      name: 'accountstatis',
+      component: () => import('../components/accountstatis/accountstatis.vue')
+    },{
+      path: '/accountedit',
+      name: 'accountedit',
+      component: () => import('../components/account/accountedit.vue')
+    },{
+      path: '/accountdetail',
+      name: 'accountdetail',
+      component: () => import('../components/account/accountdetail.vue')
     }
   ]
 })

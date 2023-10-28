@@ -12,6 +12,11 @@ module.exports = {
             },
             // 配置哪些文件中的尺寸需要转化为 rem *表示所有的都要转化
             propList: ["*"],
+            selectorBlackList: ['van']
         },
+        // 解决vant字体UI变小问题
+        "postcss-px-to-viewport": {
+            viewportWidth: 375,
+        }
     },
 }

@@ -47,5 +47,15 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  css: {
+    // css预处理器
+    preprocessorOptions: {
+      scss: {
+        // 引入 globalstyle.scss 这样就可以在全局中使用 globalstyle.scss中预定义的变量了
+        // 给导入的路径最后加上 ; 
+        additionalData: '@import "@/assets/style/globalstyle.scss";'
+      }
+    }
   }
 })
