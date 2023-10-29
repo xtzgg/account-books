@@ -58,6 +58,7 @@ const onRefresh = () => {
   // 清空列表数据
   count.value = total.value = 0
   totalAmount.value = ''
+  pageNum.value = 1
   // 重新加载数据
   // 将 loading 设置为 true，表示处于加载状态
   loading.value = true;
@@ -145,26 +146,24 @@ const onFinish = ({ selectedOptions }: any) => {
 <template>
     <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
-      <div class="">
-        <van-search class="main_search" v-model="inputSearch" show-action clearable  placeholder="请输入账单用户姓名、手机号"
+        <van-search class="main_search" v-model="inputSearch" clearable  placeholder="请输入账单用户姓名、手机号"
           @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
-          <template #action>
+          <!-- <template #action>
             <div @click="searchAccoutBooks">搜索</div>
-          </template>
+          </template> -->
         </van-search>
-      </div>
     </van-cell>
     <van-row class="searchOptions">
-      <van-col span="16">
+      <van-col span="14">
         <van-cell :title="date" 
         @click="show = true" 
         is-link 
         arrow-direction="down"
-        label="收入xxxx，支出xxxxx"
+        label="收入40000元，支出200元"
         />
         <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day/>
       </van-col>
-      <van-col class="searchOptionTypes" span="8">
+      <van-col class="searchOptionTypes" span="10">
         <van-cell :title="fieldValue" 
         @click="show1 = true" 
         is-link 
@@ -183,17 +182,17 @@ const onFinish = ({ selectedOptions }: any) => {
         </van-popup>
       </van-col>
     </van-row>
-    <van-divider style="margin: 0.1rem 0"/>
+    <!-- 1vh -->
+    <div style="margin: 0.2rem 0"></div>
     <van-cell  class="group-lay-out">
-      <van-tabs v-model:active="active" @click-tab="onClickTab"  type="card">
+      <van-tabs v-model:active="active" @click-tab="onClickTab"  type="card" style="background: #F7F6F6;" title-inactive-color="black">
         <van-tab title="收入">
-
           <van-cell class="group-lay-out">
             <div class="infinite-list-wrapper">
               <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
                 <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
                   finished-text="没有更多了" @load="load">
-                  <accountListItem :accountList="accountListData" class="list-item">
+                  <accountListItem :accountList="accountListData">
                   </accountListItem>
                 </van-list>
                 <van-back-top right="10vw" bottom="10vh" />
@@ -208,46 +207,17 @@ const onFinish = ({ selectedOptions }: any) => {
         </van-tab>
       </van-tabs>
     </van-cell>
-    <!-- <van-cell class="group-lay-out demo-input-suffix">
-        <van-row :gutter="10"  justify="space-between">
-          <van-col :span="7" style="text-align: left;">
-            <span style="padding-left:0.25rem;font-weight: bold; text-align: left;">
-            共{{ total }}条</span>
-          </van-col>
-          <van-col :span="10" style="text-align: center">
-            <span style="color: red;"> {{ totalAmount }}￥</span>
-          </van-col>
-          <van-col :span="7">
-            <van-cell to="/accountform?op=add" style="padding: 0.25rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
-          </van-col>
-        </van-row>
-    </van-cell> -->
-    <!-- <van-cell class="group-lay-out">
-      <div class="infinite-list-wrapper">
-        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-          <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
-            finished-text="没有更多了" @load="load">
-            <accountListItem :accountList="accountListData" class="list-item">
-            </accountListItem>
-          </van-list>
-          <van-back-top right="10vw" bottom="10vh" />
-        </van-pull-refresh>
-      </div>
-    </van-cell> -->
 </template>
 
 <style scoped lang="scss">
 .demo-input-search {
-  min-height: 5vh;
+  min-height: 6vh;
 }
 .main_search{
   background: $main_search_background;
 }
 .infinite-list-wrapper {
-  /* min-height: 13.5rem; */
-  /* max-height: 17rem; #f7f6f6*/
-  /* max-height: 50vh; g4y*/
-  height: calc(63vh - 0.7rem);
+  height: 63vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
   margin-top: 0.1rem;
@@ -260,21 +230,27 @@ const onFinish = ({ selectedOptions }: any) => {
   /* margin-top: 0.8rem; */
   line-height: 6vh;
   height: 6vh;
-  margin-top: 0.2rem;
+  margin-top: 1vh;
 }
 
 .group-lay-out {
   padding: 0;
+  background-color: #F7F6F6;
 }
+
 .searchOptions .van-cell--clickable,.searchOptionTypes{
   background-color: $main_search_background;
 }
 
 .searchOptions .van-cell:after{
-  border-bottom: 0px
+  border-bottom: 0px;
+  height: 8vh
 }
 .demo-input-search:after {
   border-bottom: 0
+}
+.van-cell--clickable {
+  padding-top: 0
 }
 
 </style>

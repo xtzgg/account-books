@@ -28,8 +28,14 @@ const onClickLeft = () => history.back();
 
 <template>
     <div style="padding-bottom: 2rem;">
-        <van-nav-bar class="" left-text="返回" left-arrow title="编辑账单（收入）" @click-left="onClickLeft" />
+        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" >
+            <template #title>
+                <span>编辑账单（收入）</span>
+            </template>
+        </van-nav-bar>
+        <div style="margin-top:2.2rem">
         <AccountForm :accountEditKey="accountEditKey"></AccountForm>
+        </div>
         <!--  <van-tabs v-model:active="active" @click-tab="onClickTab" color="black" background="#f7ca45" sticky>
             <van-tab title="收入">
                 <AccountForm :accountEditKey="accountEditKey"></AccountForm>
@@ -47,6 +53,9 @@ const onClickLeft = () => history.back();
 
 .navbartitle::after {
     border-bottom-width: 0
+}
+.van-nav-bar--fixed {
+    top: 4.9vh
 }
 </style>
 

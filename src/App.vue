@@ -8,40 +8,18 @@ const useGlobalColor = useTabbarActiveStore();
 </script>
 
 <template>
+  <div class="header_common"></div>
   <RouterView />
-  <!-- 底部导航 -->
-    <!-- <van-tabbar v-model="useGlobalColor.active" active-color="#00d0d4">
-      <van-row :gutter="0" class="row-bg" justify="space-around" style="width: 100%;">
-        <van-col :span="4">
-          <RouterLink to="/">
-            <van-tabbar-item name="home" icon="home-o" class="tabbar-item-self">主页</van-tabbar-item>
-          </RouterLink>
-        </van-col>
-        <van-col :span="4">
-          <RouterLink to="/accountuser"><van-tabbar-item name="search" icon="balance-list-o"
-              class="tabbar-item-self">欠款</van-tabbar-item>
-          </RouterLink>
-        </van-col>
-        <van-col :span="5">
-          <RouterLink to="/accountuser"><van-tabbar-item name="editBook" icon="add-square"
-              class="tabbar-item-self">记账</van-tabbar-item>
-          </RouterLink>
-        </van-col>
-        <van-col :span="4">
-          <RouterLink to="/accountuser"><van-tabbar-item name="search" icon="chart-trending-o"
-              class="tabbar-item-self">统计</van-tabbar-item>
-          </RouterLink>
-        </van-col>
-        <van-col :span="4">
-          <RouterLink to="/accountsetting"><van-tabbar-item name="setting" icon="manager-o"
-              class="tabbar-item-self">我的</van-tabbar-item>
-          </RouterLink>
-        </van-col>
-      </van-row>
-    </van-tabbar> -->
 </template>
-<style scoped type="css">
-.tabbar-item-self {
-  padding-top: 0.4em;
+<style scoped type="scss">
+
+.header_common {
+  width: 100%;
+  background-color: rgb(247, 202, 69);
+  position: fixed;
+  top: 0rem;
+  height: 1.1rem; 
+  /* 5vh */
+  z-index: 999;
 }
 </style>

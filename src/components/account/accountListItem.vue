@@ -11,8 +11,11 @@ import { ref, defineProps } from 'vue'
 // 路由对象
 const router = useRouter()
 // 样式
-const width_left = ref(8);
-const width_right = ref(16);
+const width_left = ref(12);
+const width_right = ref(12);
+
+const width_left_in = ref(8);
+const width_right_in = ref(16);
 
 // 父组件传值给子组件：账单列表数据
 const props = defineProps<{
@@ -85,80 +88,39 @@ const container = ref();
 
 <template>
   <van-cell v-for="(item, index) in accountList" style="padding: 0;" :to="'/accountdetail?id='+ item.id">
-    <!-- 分割线 -->
-    <!-- <van-divider style="margin: 0.2em 0">
-      <van-icon name="notes-o" />
-    </van-divider> -->
     <van-swipe-cell class="van_list_s">
       <div class="item" ref="container" >
         <!-- 粘性状态标识 -->
         <van-sticky :container="container" :offset-right="20">
-          <div style="position: absolute;right: 0.5rem;">
-            <div class="triangle2" style="font-weight: bold;">{{ item.status == null ? '' :  
+          <div style="position: absolute;right: 0.6rem;">
+            <div class="triangle2" style="color:black">{{ item.status == null ? '' :  
               BookStatus.get(item.status)}}</div>
             <div class="triangle"></div>
           </div>
         </van-sticky>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            <van-icon name="manager" />姓名：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.username }}
-            <!-- <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
-              @click="editAccountBooks(index)" /> -->
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            制单日期：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.createDate }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            单据金额：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.accountAmount }}
-            <van-tag plain type="danger">{{ item.status == null ? '' :
-              BookStatus.get(item.status) }}</van-tag>
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            截至日期：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.endDate }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            联系号码：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.mobile }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            联系地址：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.area == null ? '' : item.area + item.areaDetail == null ? '' : item.areaDetail }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            备注：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.remark }}
-          </van-col>
-        </van-row>
+        <div style="padding:0.5rem">
+            <van-row style="text-align: left">
+              <van-col :span="width_left" class="col_left">
+                类型：<span class="content_s">{{ item.bookTypeDesc }}</span>
+              </van-col>
+              <van-col :span="width_right" class="col_right">
+                客户：<span class="content_s">{{ item.username }}</span>
+              </van-col>
+            </van-row>
+            <van-row style="text-align: left">
+              <van-col :span="width_left" class="col_left">
+                金额：<span class="content_s">{{ item.totalAmount }}</span>
+              </van-col>
+              <van-col :span="width_right" class="col_right">
+                欠款：<span class="content_s">{{ item.unPayAmount }}</span>
+              </van-col>
+            </van-row>
+            <van-row style="text-align: left">
+              <van-col :span="width_left" class="col_left">
+                时间：<span class="content_s">{{ item.createDate }}</span>
+              </van-col>
+            </van-row>
+          </div>
       </div>
       <template #right>
         <van-button square type="primary" text="编辑" style="height: 100%;" @click="beforeClose('edit', index)" />
@@ -170,19 +132,24 @@ const container = ref();
 
 <style scoped lang="scss">
 .item {
-  margin-top: 0.1rem;
-  margin-bottom: 0.1rem;
+  // margin: 0.5vh 1vh;
+  margin: 0.1rem 0.2rem;
   background-color: #fff;
 }
 .van_list_s {
   background-color: $van_list_background;
 }
 .col_left {
-  font-weight: bold;
+  // font-weight: bold;
+  text-indent: 0.2rem
 }
 
 .col_right {
   text-align: left;
+  // color:black
+}
+.content_s {
+  color:black
 }
 
 .triangle {

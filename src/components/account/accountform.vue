@@ -404,7 +404,7 @@ const validatorMessage = () => {
 </script>
 <template>
     <van-form @submit="onSubmit">
-        <van-cell title="基础信息" style="background:#c9dbb4" />
+        <van-cell title="基础信息" style="background:#F7F6F6;" />
         <van-cell-group inset>
             <!-- 类型 -->
             <van-field v-model="bookTypeResult" required is-link readonly name="bookType" label="类型" placeholder="点击选择账单类型"
@@ -455,12 +455,12 @@ const validatorMessage = () => {
             <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark"
                 name="remark" label="备注" placeholder="请输入备注信息" />
         </van-cell-group>
-        <van-cell title="明细信息" style="background:#c9dbb4;">
+        <van-cell title="明细信息" style="background:#F7F6F6;">
             <span style="color:red">{{ totalAmount }}元</span>
         </van-cell>
         <van-cell-group inset>
             <div v-for="(detail, index) in accounForm.details" :key="index" style="background-color:aliceblue;">
-                <van-cell title-style="font-weight: 900;">
+                <van-cell title-style="font-weight: bold;">
                     <template #title>
                         条目{{ index + 1 }}
                     </template>

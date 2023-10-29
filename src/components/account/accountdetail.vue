@@ -102,18 +102,23 @@ const clickRouteEdit = ()=>{
 </script>
 
 <template>
+  
+  <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" >
+    <template #title>
+        <span>账单详情（收入）</span>
+    </template>
+  </van-nav-bar>
   <div style="margin-bottom: 2rem;">
-  <van-nav-bar fixed class="navbartitle" left-text="返回" left-arrow title="账单详情（收入）" @click-left="onClickLeft" />
-  <van-cell-group style="margin-bottom: 0.5rem;margin-top: 0.8rem;"  ref="container">
+  <van-cell-group style="margin-bottom: 0.5rem;margin-top: 2.2rem;background-color: #F7F6F6;"  ref="container">
     <van-cell>
     <!-- 粘性状态标识 -->
     <van-sticky :container="container" :offset-right="20">
       <div style="position: absolute;right: 0;">
-        <div class="triangle2" style="font-weight: bold;">{{ statusDesc }}</div>
+        <div class="triangle2" style="color: black;">{{ statusDesc }}</div>
         <div class="triangle"></div>
       </div>
     </van-sticky>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         类型
       </van-col>
@@ -121,7 +126,7 @@ const clickRouteEdit = ()=>{
         {{ bookTypeDesc }}
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         时间
       </van-col>
@@ -129,23 +134,23 @@ const clickRouteEdit = ()=>{
         {{ accounForm.createDate }}
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         总金额
       </van-col>
       <van-col :span="width_right" class="col_right">
-        {{ accounForm.totalAmount }}元
+        {{ accounForm.totalAmount }} 元
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         已付金额
       </van-col>
       <van-col :span="width_right" class="col_right">
-        {{ accounForm.payAmount }}元
+        {{ accounForm.payAmount }} 元
       </van-col>
     </van-row>
-    <van-row :gutter="10"  v-if="accounForm.status === 1 && accounForm.userId">
+    <van-row   v-if="accounForm.status === 1 && accounForm.userId">
       <van-col :span="width_left" class="col_left">
         未付金额
       </van-col>
@@ -154,7 +159,7 @@ const clickRouteEdit = ()=>{
       </van-col>
     </van-row>
     <div v-if="accounForm.status === 1 && accounForm.userId">
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         <!-- <van-icon name="manager" /> -->
         姓名
@@ -163,7 +168,7 @@ const clickRouteEdit = ()=>{
         {{ accounForm.username }}
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         联系号码
       </van-col>
@@ -171,7 +176,7 @@ const clickRouteEdit = ()=>{
         {{ accounForm.mobile }}
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         地址
       </van-col>
@@ -179,7 +184,7 @@ const clickRouteEdit = ()=>{
         {{ accounForm.area == null ? '' : accounForm.area}}
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         详细地址
       </van-col>
@@ -189,7 +194,7 @@ const clickRouteEdit = ()=>{
         expand-text="展开" collapse-text="收起" />
       </van-col>
     </van-row>
-    <van-row :gutter="10">
+    <van-row >
       <van-col :span="width_left" class="col_left">
         备注
       </van-col>
@@ -202,9 +207,9 @@ const clickRouteEdit = ()=>{
     </div>
   </van-cell>
   </van-cell-group>
-  <van-cell-group  v-for="detail in accounForm.details" style="margin-top: 0.2rem;">
-  <van-cell  style="background-color: aliceblue;">
-      <van-row :gutter="10">
+  <van-cell-group  v-for="(detail,index1) in accounForm.details" >
+  <van-cell>
+      <van-row >
         <van-col :span="width_left" class="col_left">
           品类
         </van-col>
@@ -212,7 +217,7 @@ const clickRouteEdit = ()=>{
           {{ detail.name }}
         </van-col>
       </van-row>
-      <van-row :gutter="10">
+      <van-row >
         <van-col :span="width_left" class="col_left">
           金额
         </van-col>
@@ -220,21 +225,23 @@ const clickRouteEdit = ()=>{
           {{ detail.amount }} 元
         </van-col>
       </van-row>
-      <van-row :gutter="10">
+      <van-row >
         <van-col :span="width_left" class="col_left">
           重量
         </van-col>
         <van-col :span="width_right" class="col_right">
-          {{ detail.weight }}
+          {{ detail.weight }} 公斤
         </van-col>
       </van-row>
-      <!-- <hr style="margin-top: 0.2rem;"/> -->
+    </van-cell>
+    <van-cell style="padding-top: 0px; padding-bottom: 0px;">
+      <van-divider v-if="accounForm.details.length-1 != index1"  style="background-color: black;margin:0;" hairline="false"/>
     </van-cell>
   </van-cell-group>
 </div>
   <van-tabbar class="button_bottom_s" v-model="active" active-color="#fff">
       <van-tabbar-item class="tab_edit" icon="" style="font-size: 20px;" @click="clickRouteEdit">编辑</van-tabbar-item>
-      <van-tabbar-item class="tab_cal_amount" icon="" style="font-size: 20px;">结款</van-tabbar-item>
+      <van-tabbar-item v-if="accounForm.status === 1" class="tab_cal_amount" icon="" style="font-size: 20px;">结款</van-tabbar-item>
   </van-tabbar>
 
 </template>
@@ -244,9 +251,6 @@ const clickRouteEdit = ()=>{
 .navbartitle {
   background: $main_search_background;
 }
-// .button_bottom_s .van-tabbar-item--active {
-//     background-color: $bottom_button_background
-// }
 .button_bottom_s .tab_edit{
   background-color: $bottom_button_background
 }
@@ -254,7 +258,6 @@ const clickRouteEdit = ()=>{
   background-color: #f3cabe
 }
 .col_left {
-  // font-weight: bold;
   text-align: left;
 }
 
@@ -266,16 +269,23 @@ const clickRouteEdit = ()=>{
 .triangle {
     width: 0;
     height: 0;
-    border-top: 0.5rem solid $base_background;
+    border-top: 0.5rem solid #EDC8C1;
+    // $base_background;
     border-right: 0.7rem solid transparent;
     border-left: 0.7rem solid transparent;
 }
 
 .triangle2 {
-    background-color: $base_background;
+    background-color: #EDC8C1;
+    // $base_background;
     width: 1.4rem;
     height: 0.8rem;
     text-align: center;
     line-height: 1rem;
 }
+
+.van-nav-bar--fixed {
+    top: 4.9vh
+}
+
 </style>
