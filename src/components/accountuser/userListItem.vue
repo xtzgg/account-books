@@ -2,20 +2,21 @@
 
 import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance } from 'vue'
 import { showConfirmDialog, showNotify } from 'vant';
-import { Edit } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 import { AccountUserService, type AccountUser } from '@/api/api';
 
 // 路由对象
 const router = useRouter()
+const route = useRoute();
 
 const width_left = ref(8);
 const width_right = ref(16);
 
 // 父组件传值给子组件：账单列表数据
 const props = defineProps<{
-  accountUserList: AccountUser[]
+  accountUserList: AccountUser[],
+  role: string
 }>()
 
 // 编辑用户
@@ -74,29 +75,24 @@ const deleteAccountUser = async (i: number) => {
     });
   }
 }
+const container = ref();
 </script>
 
 <template>
-  <van-cell v-for="(item, index) in accountUserList" style="padding: 0;">
-    <!-- 分割线 -->
-    <van-divider style="margin: 0.2em 0">
-      <van-icon name="notes-o" />
-    </van-divider>
-    <van-swipe-cell>
-      <div class="item">
+  <van-cell v-for="(item, index) in accountUserList" style="padding: 0;" :to="'/accountuserdetail?userId='+ item.userId + '&role=' + props.role">
+    <van-swipe-cell  class="van_list_s">
+      <div class="item"  ref="container" >
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
-            <van-icon name="manager" />姓名：
+            姓名：
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.username }}
-            <Edit style="width: 0.5rem; height: 0.5rem; float: right; margin-right: 0.1rem;"
-              @click="editAccountUser(index)" />
           </van-col>
         </van-row>
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
-            联系号码：
+            电话：
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.mobile }}
@@ -104,10 +100,19 @@ const deleteAccountUser = async (i: number) => {
         </van-row>
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
-            联系地址：
+            地址：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ item.area == null ? '' : item.area + item.areaDetail == null ? '' : item.areaDetail}}
+            {{ item.area == null ? '' : item.area}}
+          </van-col>
+        </van-row>
+        <van-row :gutter="10">
+          <van-col :span="width_left" class="col_left">
+            详细地址：
+          </van-col>
+          <van-col :span="width_right" class="col_right">
+            <van-text-ellipsis style="z-index:2" :content="item.areaDetail == null ? '' : item.areaDetail"
+                />
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -116,14 +121,6 @@ const deleteAccountUser = async (i: number) => {
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.createDate }}
-          </van-col>
-        </van-row>
-        <van-row :gutter="10">
-          <van-col :span="width_left" class="col_left">
-            备注：
-          </van-col>
-          <van-col :span="width_right" class="col_right">
-            {{ item.remark }}
           </van-col>
         </van-row>
       </div>
@@ -135,19 +132,23 @@ const deleteAccountUser = async (i: number) => {
   </van-cell>
 </template>
   
-<style scoped>
+<style scoped lang="scss">
 .item {
-  margin-top: 0.1rem;
-  margin-bottom: 0.1rem;
-  background-color: rgb(239 249 249);
+  margin: 0.1rem 0.2rem;
+  background-color: #fff;
+  // padding:0.5rem;
 }
-
+.van_list_s {
+  background-color: $van_list_background;
+}
 .col_left {
-  font-weight: bold;
+  // font-weight: bold;
+  text-indent: 0.2rem
 }
-
 .col_right {
   text-align: left;
+  color:black
 }
+
 </style>
   

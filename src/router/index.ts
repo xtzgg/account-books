@@ -3,6 +3,7 @@ import AccountMain from '../views/accountMain.vue'
 import UserMain from '../views/userMain.vue'
 import AccountSetting from '../views/accountSetting.vue'
 import AccountAdd from '../views/accountadd.vue'
+import AccountUnpayMain from '../views/accountunpaymain.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,6 +30,14 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/UserMain.vue')
     },{
+      path: '/accountadd',
+      name: 'accountadd',
+      component: AccountAdd
+    },{
+      path: '/accountunpaymain',
+      name: 'accountunpaymain',
+      component: AccountUnpayMain
+    },{
       path: '/accountform',
       name: 'accountform',
       component: () => import('../components/account/accountform.vue')
@@ -45,10 +54,6 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/UserMain.vue')
     },{
-      path: '/accountadd',
-      name: 'accountadd',
-      component: AccountAdd
-    },{
       path: '/accountstatis',
       name: 'accountstatis',
       component: () => import('../components/accountstatis/accountstatis.vue')
@@ -60,6 +65,14 @@ const router = createRouter({
       path: '/accountdetail',
       name: 'accountdetail',
       component: () => import('../components/account/accountdetail.vue')
+    },{
+      path: '/accountuserdetail',
+      name: 'accountuserdetail',
+      component: () => import('../components/accountuser/accountuserdetail.vue')
+    },{
+      path: '/accountuseredit',
+      name: 'accountuseredit',
+      component: () => import('../components/accountuser/accountuseredit.vue')
     }
   ]
 })

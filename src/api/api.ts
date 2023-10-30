@@ -7,9 +7,15 @@ export const BookStatus = new Map<number, string>();
 BookStatus.set(1, '未结清');
 BookStatus.set(2, '已结清');
 
+export const EnableStatus = new Map<number, string>();
+EnableStatus.set(0, '禁用');
+EnableStatus.set(1, '启用');
+
 /** 编辑新增通用 */
-export interface AccountEditKey {
-    id: number | null,
+export interface AccountEditKey {   
+    id?: number | null,
+    userId?: number,
+    role?: string,
     op: string
 }
 // 账单列表类型声明
@@ -22,13 +28,12 @@ export interface AccountBook {
     areaCode: string,
     areaDetail: string,
     remark: string,
-    endDate: string,
-    accountAmount: string,
-    totalAmount: string,
+    totalAmount: string | number,
     payAmount: string | number,
     status: number | null,
     createDate: string,
     bookType: number | null,
+    bookTypeDesc: string,
     details: Vegetables[]
 }
 interface Vegetables {
@@ -42,7 +47,8 @@ interface PageParams {
     pageSize: number,
     username: string,
     remark: string,
-    mobile: string
+    mobile: string,
+    status?: number
 }
 export class AccoutListService {       // 账单接口
     // 账单查询
@@ -78,8 +84,8 @@ export interface AccountUser {
     area: string,
     areaCode: string,
     areaDetail: string,
-    remark: string,
     status: number | null,
+    type: number | null,
     createDate: string
 }
 

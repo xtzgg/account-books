@@ -2,16 +2,21 @@
 import accountListItem from './accountListItem.vue'
 import { computed, ref, defineProps, toRefs, onMounted, reactive } from 'vue'
 import { type AccountBook, AccoutListService, type AccountUser } from '@/api/api'
-import { showToast } from 'vant'
-
+import { showToast, type DatePickerColumnType } from 'vant'
 import 'vant/es/dialog/style';
+
+// 父组件传值给子组件：账单列表数据
+const props = defineProps<{
+  bookStatus: number
+}>()
 // 初始化加载
 onMounted(() => {
   inputSearch.value = ''
   accountlist();
   // 日历显示初始化
   const nowDate = new Date();
-  date.value = `${formatDate(nowDate)} - ${formatDate(nowDate)}`;
+  currentDate.value = [`${nowDate.getFullYear()}`, `${nowDate.getMonth() + 1}`];
+  currentDateResult.value = formatDate(nowDate);
 })
 
 // 账单搜索框
@@ -29,7 +34,6 @@ const loading = ref(false)
 const error = ref(false);
 const refreshing = ref(false);
 const noMore = computed(() => {
-  // alert(count.value + "------" + total.value)
   return count.value >= total.value
 })
 
@@ -68,8 +72,9 @@ const accountlist = async () => {
     "pageNum": pageNum.value,
     "pageSize": pageSize.value,
     "username": username.value,
-    "remark": remark.value,
-    "mobile": mobile.value
+    "createDate": createDate.value,
+    "mobile": mobile.value,
+    "status": Number(props.bookStatus)
   }).catch(() => {
     error.value = true;
   })
@@ -101,15 +106,32 @@ const searchAccoutBooks = () => {
 const active = ref(0);
 const onClickTab = ({ title }: any) => showToast(title);
 
-// 日历
-const date = ref('');
-const show = ref(false);
-const formatDate = (date: any) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
-const onConfirm = (values: any) => {
-  const [start, end] = values;
-  show.value = false;
-  date.value = `${formatDate(start)} - ${formatDate(end)}`;
+// 日期
+// 范围
+const minDate = new Date(2020, 1, 1);
+const maxDate = new Date(2030, 11, 31);
+const showDatePicker = ref(false);
+const createDate = ref('');
+const currentDate = ref<string[]>([]);
+const currentDateResult = ref('');
+const columnsType = ref(['year', 'month']);
+const formatter = (type: string, option: any) => {
+      if (type === 'year') {
+        option.text += '年';
+      }
+      if (type === 'month') {
+        option.text += '月';
+      }
+      return option;
+}
+const onConfirm = ({selectedOptions}: any) => {
+  console.log(selectedOptions);
+  currentDateResult.value = selectedOptions[0].text + selectedOptions[1].text;
+  createDate.value = selectedOptions[0].value + '-' + selectedOptions[1].value;
+  showDatePicker.value = false;
+  // 触发搜索
 };
+const formatDate = (date: any) => `${date.getFullYear()}年${date.getMonth() + 1}月`;
 // 类型
 const code = ref('');
 const fieldNames = {
@@ -117,21 +139,8 @@ const fieldNames = {
   value: 'code',
   children: 'items',
 };
-const options = [
-  {
-    name: '零售',
-    code: '330000'
-    // ,
-    // items: [{ name: '杭州市', code: '330100' }],
-  },
-  {
-    name: '批发',
-    code: '320000',
-    items: [{ name: '土豆', code: '320100' }],
-  },
-];
 const show1 = ref(false);
-const fieldValue = ref('类别');
+const fieldValue = ref();
 // 全部选项选择完毕后，会触发 finish 事件
 const onFinish = ({ selectedOptions }: any) => {
   show1.value = false;
@@ -140,90 +149,73 @@ const onFinish = ({ selectedOptions }: any) => {
 </script>
 
 <template>
-    <van-cell class="group-lay-out demo-input-search">
-      <!-- 搜索 -->
-        <van-search class="main_search" v-model="inputSearch" clearable  placeholder="请输入账单用户姓名、手机号"
-          @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
-          <!-- <template #action>
+  <van-cell class="group-lay-out demo-input-search">
+    <!-- 搜索 -->
+    <van-search class="main_search" v-model="inputSearch" clearable placeholder="请输入账单用户姓名、手机号"
+      @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
+      <!-- <template #action>
             <div @click="searchAccoutBooks">搜索</div>
           </template> -->
-        </van-search>
-    </van-cell>
-    <van-row class="searchOptions">
-      <van-col span="14">
-        <van-cell :title="date" 
-        @click="show = true" 
-        is-link 
-        arrow-direction="down"
-        label="收入40000元，支出200元"
+    </van-search>
+  </van-cell>
+  <van-row class="searchOptions" style="background-color: #f7ca45;">
+    <van-col span="1"></van-col>
+    <van-col span="10">
+      <van-field
+        v-model="currentDateResult"
+        right-icon="notes"
+        readonly
+        placeholder="选择日期"
+        style="background-color: #f7ca45;"
+        @click="showDatePicker = true"
+      />
+      <van-popup v-model:show="showDatePicker" round position="bottom">
+        <van-date-picker
+          v-model="currentDate"
+          title="选择年月"
+          :min-date="minDate"
+          :max-date="maxDate"
+          :formatter="formatter"
+          :columns-type="columnsType"
+          @confirm="onConfirm"
         />
-        <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day/>
-      </van-col>
-      <van-col class="searchOptionTypes" span="10">
-        <van-cell :title="fieldValue" 
-        @click="show1 = true" 
-        is-link 
-        arrow-direction="down"
-        color="black"
-        />
-        <van-popup v-model:show="show1" round position="bottom">
-          <van-cascader
-            v-model="code"
-            title="选择类型"
-            :options="options"
-            :field-names="fieldNames"
-            @close="show1 = false"
-            @finish="onFinish"
-          />
-        </van-popup>
-      </van-col>
-    </van-row>
-    <!-- 1vh -->
-    <div style="margin: 0.2rem 0"></div>
-    <van-cell  class="group-lay-out">
-      <van-tabs v-model:active="active" @click-tab="onClickTab"  type="card" style="background: #F7F6F6;" title-inactive-color="black">
-        <van-tab title="收入">
-
-          <van-cell class="group-lay-out">
-            <div class="infinite-list-wrapper">
-              <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-                <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
-                  finished-text="没有更多了" @load="load">
-                  <accountListItem :accountList="accountListData">
-                  </accountListItem>
-                </van-list>
-                <van-back-top right="10vw" bottom="10vh" />
-              </van-pull-refresh>
-            </div>
-          </van-cell>
-
-        </van-tab>
-        <van-tab title="支出">
-
-
-        </van-tab>
-      </van-tabs>
-    </van-cell>
+      </van-popup>
+    </van-col>
+  </van-row>
+  <van-cell class="group-lay-out">
+    <div class="infinite-list-wrapper">
+      <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+        <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
+          finished-text="没有更多了" @load="load">
+          <accountListItem :accountList="accountListData">
+          </accountListItem>
+        </van-list>
+        <van-back-top right="10vw" bottom="10vh" />
+      </van-pull-refresh>
+    </div>
+  </van-cell>
 </template>
 
 <style scoped lang="scss">
 .demo-input-search {
   min-height: 6vh;
 }
-.main_search{
+
+.main_search {
   background: $main_search_background;
 }
+
 .infinite-list-wrapper {
-  height: 63vh;
+  height: 72vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
-  margin-top: 0.1rem;
+  // margin-top: 0.1rem;
 }
 
 .demo-input-suffix {
   /* height: 1rem; */
-  background-color: aliceblue; 
-  font-size:0.4rem;
+  background-color: aliceblue;
+  font-size: 0.4rem;
   /* margin-top: 0.8rem; */
   line-height: 6vh;
   height: 6vh;
@@ -235,21 +227,23 @@ const onFinish = ({ selectedOptions }: any) => {
   background-color: #F7F6F6;
 }
 
-.searchOptions .van-cell--clickable,.searchOptionTypes{
+.searchOptions .van-cell--clickable,
+.searchOptionTypes {
   background-color: $main_search_background;
 }
 
-.searchOptions .van-cell:after{
+.searchOptions .van-cell:after {
   border-bottom: 0px;
   height: 8vh
 }
+
 .demo-input-search:after {
   border-bottom: 0
 }
+
 .van-cell--clickable {
   padding-top: 0
 }
-
 </style>
 
 

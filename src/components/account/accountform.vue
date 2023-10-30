@@ -92,7 +92,7 @@ const accounForm: AccountBook = reactive({
     totalAmount: '',
     payAmount: '',
     bookType: null,
-    endDate: '',
+    bookTypeDesc: '',
     mobile: '',
     area: '',
     areaCode: '',
@@ -139,7 +139,6 @@ const formShowFuc = () => {
     userResult.value = accounForm.username
     const status = getStatus(accounForm.bookType);
     bookTypeResult.value = status == null ? '' : status.text;
-    endDateResult.value = accounForm.endDate
     areaResult.value = accounForm.area
     console.log(accounForm)
 }
@@ -149,7 +148,6 @@ const formShowFuc = () => {
 const onConfirmEndDate = (value: any) => {
     endDateResult.value = `${value.getFullYear()}-${value.getMonth() + 1}-${value.getDate()}`
     endDateshowCalendar.value = false;
-    accounForm.endDate = endDateResult.value;
 };
 
 // 地区选择
@@ -305,11 +303,12 @@ const accountSubmit = async () => {
         "area": accounForm.area,
         "areaCode": accounForm.areaCode,
         "areaDetail": accounForm.areaDetail,
-        "endDate": accounForm.endDate,
-        "accountAmount": accounForm.accountAmount,
+        "totalAmount": accounForm.totalAmount,
+        "payAmount": accounForm.payAmount,
         "status": accounForm.status,
+        "bookType": accounForm.bookType,
         "remark": accounForm.remark,
-        "items": accounForm.details
+        "details": accounForm.details
     }
     let res: any;
     if (props.accountEditKey.id && props.accountEditKey.id !== null) {

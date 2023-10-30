@@ -3,10 +3,6 @@ import UserListItem from './userListItem.vue'
 import { computed, ref,reactive,onMounted} from 'vue'
 import 'vant/es/dialog/style';
 import { AccountUserService, type AccountUser } from '@/api/api'
-// 样式组件
-import { useGlobalColorStore } from '@/stores/backgroundcolor'
-
-const GlobalColor = useGlobalColorStore()
 
 // 初始化加载
 const dialogFormVisible = ref(false)
@@ -19,6 +15,11 @@ const username = ref('')
 const remark = ref('')
 // 搜索框
 const inputSearch = ref('')
+
+// 父组件传值给子组件：账单列表数据
+const props = defineProps<{
+  role: string
+}>()
 
 onMounted(()=>{
   inputSearch.value = ''
@@ -52,6 +53,7 @@ const load = () => {
 const onRefresh = () => {
   // 清空列表数据
   count.value = total.value = 0
+  pageNum.value = 1;
   // 将 loading 设置为 true，表示处于加载状态
   loading.value = true;
   // 重新加载数据
@@ -115,33 +117,19 @@ const accountUserEdit = ()=>{
   <van-cell-group>
     <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
-      <van-search v-model="inputSearch" show-action clearable :background="GlobalColor.color" placeholder="请输入姓名、手机号、备注"
+      <van-search class="main_search" v-model="inputSearch" clearable placeholder="请输入姓名、电话"
         @keydown.enter="searchAccoutUser" @search="searchAccoutUser" @clear="searchAccoutUser">
-        <template #action>
+        <!-- <template #action>
           <div @click="searchAccoutUser">搜索</div>
-        </template>
+        </template> -->
       </van-search>
-    </van-cell>
-    <van-cell class="group-lay-out">
-      <!-- 总计 -->
-      <div class="demo-input-suffix">
-        <van-row :gutter="10" justify="space-between">
-          <van-col :span="15" style="text-align: left;">
-            <span style="padding-left:0.25rem;font-weight: bold;text-align: left;">
-            共{{ total }}条</span>
-          </van-col>
-          <van-col :span="9">
-            <van-cell to="/accountuserform?op=add" style="padding: 0.25rem 0px 0px;background-color: aliceblue;text-align: right;" is-link value="添加"/>
-          </van-col>
-        </van-row>
-      </div>
     </van-cell>
     <van-cell class="group-lay-out">
       <div class="infinite-list-wrapper">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
           <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
             finished-text="没有更多了" @load="load">
-            <user-list-item :accountUserList="accountUserList" class="list-item"></user-list-item>
+            <user-list-item :accountUserList="accountUserList" :role="props.role" class="list-item"></user-list-item>
           </van-list>
           <van-back-top right="10vw" bottom="10vh" />
         </van-pull-refresh>
@@ -151,17 +139,20 @@ const accountUserEdit = ()=>{
 </template>
 
 
-<style scoped>
+<style scoped lang="scss">
 .demo-input-search {
   height: 8vh;
+  background: $main_search_background;
+}
+.main_search{
+  background: $main_search_background;
 }
 .infinite-list-wrapper {
-    /* min-height: 13.5rem; */
-  /* max-height: 17rem; */
-  /* max-height: 50vh; */
   height: calc(80vh - 0.7rem);
   overflow-y: hidden visible;
   overflow-x: hidden;
+  padding-top: 0.1rem;
+  background-color: #F7F6F6;
 }
 
 .demo-input-suffix {

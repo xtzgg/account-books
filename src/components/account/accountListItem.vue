@@ -14,9 +14,6 @@ const router = useRouter()
 const width_left = ref(12);
 const width_right = ref(12);
 
-const width_left_in = ref(8);
-const width_right_in = ref(16);
-
 // 父组件传值给子组件：账单列表数据
 const props = defineProps<{
   accountList: AccountBook[]
@@ -91,13 +88,11 @@ const container = ref();
     <van-swipe-cell class="van_list_s">
       <div class="item" ref="container" >
         <!-- 粘性状态标识 -->
-        <van-sticky :container="container" :offset-right="20">
-          <div style="position: absolute;right: 0.6rem;">
-            <div class="triangle2" style="color:black">{{ item.status == null ? '' :  
-              BookStatus.get(item.status)}}</div>
-            <div class="triangle"></div>
-          </div>
-        </van-sticky>
+        <div style="position: absolute;right: 0.6rem;">
+          <div :class="['triangle2',item.status === 1 ? 'triangle2_error':'']" style="color:black">{{ item.status == null ? '' :  
+            BookStatus.get(item.status)}}</div>
+          <div :class="['triangle',item.status === 1 ? 'triangle_error':'']"></div>
+        </div>
         <div style="padding:0.5rem">
             <van-row style="text-align: left">
               <van-col :span="width_left" class="col_left">
@@ -112,7 +107,7 @@ const container = ref();
                 金额：<span class="content_s">{{ item.totalAmount }}</span>
               </van-col>
               <van-col :span="width_right" class="col_right">
-                欠款：<span class="content_s">{{ item.unPayAmount }}</span>
+                欠款：<span class="content_s">{{ Number(item.totalAmount) - Number(item.payAmount) }}</span>
               </van-col>
             </van-row>
             <van-row style="text-align: left">
@@ -155,17 +150,25 @@ const container = ref();
 .triangle {
     width: 0;
     height: 0;
-    border-top: 0.5rem solid $base_background;
+    border-top: 0.5rem solid #DAEDC1;
     border-right: 0.7rem solid transparent;
     border-left: 0.7rem solid transparent;
 }
 
+.triangle_error {
+    border-top: 0.5rem solid #EDC8C1;
+}
+
 .triangle2 {
-    background-color: $base_background;
+    background-color: #DAEDC1;
     width: 1.4rem;
     height: 0.8rem;
     text-align: center;
     line-height: 1rem;
+}
+
+.triangle2_error {
+  background-color: #EDC8C1;
 }
 
 </style>

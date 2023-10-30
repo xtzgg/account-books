@@ -17,7 +17,7 @@ const useGlobalColor = useTabbarActiveStore();
           </RouterLink>
         </van-col>
         <van-col :span="4">
-          <RouterLink to="/accountuser"><van-tabbar-item name="search" icon="balance-list-o"
+          <RouterLink to="/accountunpaymain"><van-tabbar-item name="unpay" icon="balance-list-o"
               class="tabbar-item-self">欠款</van-tabbar-item>
           </RouterLink>
         </van-col>

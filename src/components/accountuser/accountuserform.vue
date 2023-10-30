@@ -1,35 +1,37 @@
 <script lang="ts" setup>
 
-import { reactive } from 'vue';
-import { ref, onMounted } from 'vue';
+import { computed, reactive } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 import { areaList } from '../../common/area';
-import { showConfirmDialog, showNotify } from 'vant';
+import { showNotify, showToast } from 'vant';
 
-import { type AccountUser, accountUserStatusColumns, AccountUserService } from '@/api/api'
+import { AccountUserService, type AccountUser, type AccountEditKey, EnableStatus } from '@/api/api'
 
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 // 系统对象
 const router = useRouter()
-const route = useRoute()
 // 约束
 interface PickerItem {
     value: number
     text: string
 }
+
+// 父组件传值给子组件：账单详情
+const props = defineProps<{
+    accountEditKey: AccountEditKey
+}>()
+
 // 挂载初始化
 onMounted(() => {
-    // 编辑路由传值初始化 accountUser
-    if (route.query.op === 'edit') {
-        initAccountUser(Number(route.query.userId));
+    // 编辑
+    if (props.accountEditKey.op === 'edit') {
+        initAccountUser(Number(props.accountEditKey.userId));
     }
 })
 
-// 返回上级
-const onClickLeft = () => history.back();
-
-// 初始化账本编辑信息
+// 初始化人员信息
 const initAccountUser = async (userId: number) => {
     const res: any = await AccountUserService.detail({ 'userId': userId });
     if (res.data) {
@@ -44,32 +46,41 @@ const overlayCustomStyle = { 'opacity': '0.7' }
 const textAreaSize = { maxHeight: 100, minHeight: 0 }
 const showStatusPicker = ref(false);
 const showArea = ref(false);
-const userResult = ref('');
 const statusResult = ref('');
 const areaResult = ref('');
-
 // 表单信息
 const accountUser: AccountUser = reactive({
     userId: null,
     username: '',
     status: null,
+    type: null,
     mobile: '',
     area: '',
     areaCode: '',
     areaDetail: '',
-    remark: '',
     createDate: ''
 })
 
 // 回显表单值
 const formShowFuc = () => {
-    userResult.value = accountUser.username
-    const status = getStatus(accountUser.status);
-    statusResult.value = status == null ? '' : status.text;
+    const statusDesc = getStatus(accountUser.status);
+    statusResult.value = statusDesc == null ? '' : statusDesc;
     areaResult.value = accountUser.area
     console.log(accountUser)
 }
-// 组件回显
+
+// 
+const accountUserStatusColumns = [
+    { "text": EnableStatus.get(1), 'value': 1 },
+    { "text": EnableStatus.get(0), 'value': 0 }
+]
+
+// 确认
+const onConfirmStatus = ({ selectedOptions }: any) => {
+    statusResult.value = selectedOptions[0].text;
+    accountUser.status = selectedOptions[0].value;
+}
+
 
 // 地区选择
 const onConfirmArea = ({ selectedOptions }: any) => {
@@ -83,19 +94,11 @@ const onConfirmArea = ({ selectedOptions }: any) => {
 // 根据code结算状态获取
 const getStatus = (value: number | null) => {
     if (value != null) {
-        return accountUserStatusColumns[value == 1 ? 0 : 1]
+        return EnableStatus.get(value);
     }
     return null;
 }
 
-// 用户状态选择
-const onConfirmStatus = ({ selectedOptions }: any) => {
-    statusResult.value = selectedOptions[0]?.text;
-    // 赋值表单
-    accountUser.status = selectedOptions[0]?.value;
-    // 隐藏
-    showStatusPicker.value = false;
-};
 // 表单提交
 const overlayShow = ref(false)
 const onSubmit = (values: any) => {
@@ -108,7 +111,7 @@ const onSubmit = (values: any) => {
 };
 
 const accountSubmit = async () => {
-    console.log(accountUser)
+    console.log(accountUser);
     const params = {
         "userId": accountUser.userId,
         "username": accountUser.username,
@@ -117,11 +120,10 @@ const accountSubmit = async () => {
         "areaCode": accountUser.areaCode,
         "areaDetail": accountUser.areaDetail,
         "status": accountUser.status,
-        "remark": accountUser.remark
     }
     let res: any;
-    if(route.query.userId){
-        params.userId = Number(route.query.userId);
+    if (props.accountEditKey.userId && props.accountEditKey.userId !== null) {
+        params.userId = Number(props.accountEditKey.userId);
         res = await AccountUserService.edit(params)
     } else {
         res = await AccountUserService.add(params)
@@ -130,16 +132,19 @@ const accountSubmit = async () => {
     // 关闭遮罩层
     overlayShow.value = false
     if (res.status === 200) {
-        // 通知
-        showNotify({
+        showToast({
             type: 'success',
             message: '保存成功',
-            duration: 1000,
+            position: 'top',
         });
         // 延迟1s后跳转到上一页面
-        setTimeout(()=>{
-            router.go(-1);
-        },1000)
+        setTimeout(() => {
+            if (props.accountEditKey.op === 'edit') {
+                router.go(-1);
+            } else {
+                router.go(0);
+            }
+        }, 1000)
     } else {
         showNotify({
             type: 'danger',
@@ -151,8 +156,8 @@ const accountSubmit = async () => {
 
 </script>
 <template>
-    <van-nav-bar title="添加人员" left-text="返回" left-arrow @click-left="onClickLeft" />
     <van-form @submit="onSubmit">
+        <van-cell title="基础信息" style="background:#F7F6F6;" />
         <van-cell-group inset>
             <!-- 用户名 -->
             <van-field v-model="accountUser.username" name="username" label="姓名" placeholder="请输入姓名" />
@@ -172,8 +177,6 @@ const accountSubmit = async () => {
             </van-popup>
             <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
                 v-model="accountUser.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
-            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accountUser.remark"
-                name="remark" label="备注" placeholder="请输入备注信息" />
         </van-cell-group>
         <div style="margin: 16px;">
             <van-button round block type="primary" native-type="submit">
@@ -186,11 +189,14 @@ const accountSubmit = async () => {
     </van-overlay>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+
+
 .wrapper-loading {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
 }
+
 </style>
