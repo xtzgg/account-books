@@ -43,11 +43,11 @@ const initAccountBooks = async (id: number) => {
     const res: any = await AccoutListService.detail({ 'id': id });
     if (res.data) {
         Object.assign(accounForm, res.data);
-        accounForm.details = [{
-            name: '',
-            amount: '',
-            weight: ''
-        }]
+        // accounForm.details = [{
+        //     name: '',
+        //     amount: '',
+        //     weight: ''
+        // }]
         // 组件绑定input回显
         formShowFuc();
     }
@@ -395,7 +395,7 @@ const validatorMessage = () => {
         tmpAmount += Number(d.amount);
     })
     // 未结清
-    if (Number(accounForm.payAmount) <= tmpAmount && !accounForm.userId) {
+    if (Number(accounForm.payAmount) < tmpAmount && !accounForm.userId) {
         return "存在欠款，人员必选";
     }
     return '';
@@ -415,44 +415,47 @@ const validatorMessage = () => {
             <!-- 结算金额 -->
             <van-field v-model="accounForm.payAmount" type="number" required name="accountAmount" label="已付金额(元)"
                 placeholder="请输入结算金额" :rules="[{ required: true, message: '请输入已付金额' }]" />
-            <!-- 用户名 -->
-            <van-field v-model="userResult" is-link readonly name="username" label="姓名" placeholder="点击选择人员"
-                @click="showUserPickerClick" validate-trigger="onSubmit" :rules="[{ validator: validatorMessage }]" />
-            <van-popup v-model:show="showUserPicker" position="bottom">
-                <van-picker :columns="userListColumns" @confirm="onConfirmUser" @cancel="addUser" cancel-button-text="去添加"
-                    :loading="loading">
-                    <template #title>
-                        <!-- left-icon="" -->
-                        <van-search v-model="searchValue" placeholder="请输入人员姓名" @search="searchAccountUserListFuc" />
-                    </template>
-                </van-picker>
-            </van-popup>
-            <!-- 结算状态 -->
-            <!-- <van-field v-model="bookTypeResult" is-link readonly name="status" label="结算状态" placeholder="点击选择结算状态"
-                @click="showBookTypePicker = true" :rules="[{ required: true, message: '请选择结算状态' }]" />
-            <van-popup v-model:show="showBookTypePicker" position="bottom">
-                <van-picker title="结算状态" :columns="accountBookStatusColumns" @confirm="onConfirmBookType"
-                    @cancel="showBookTypePicker = false" :loading="loading" />
-            </van-popup> -->
-            <!-- <van-field v-model="unpayAmount" name="accountAmount" label="未付金额(元)" readonly />
-            <van-field v-model="accounForm.totalAmount" name="accountAmount" label="总金额(元)" readonly /> -->
-            <!-- 截至日期 -->
-            <!-- <van-field v-model="endDateResult" is-link readonly name="calendar" label="截至日期" placeholder="点击选择日期"
-                @click="endDateshowCalendar = true" />
-            <van-calendar v-model:show="endDateshowCalendar" :min-date="minDate" :max-date="maxDate"
-                :defaultDate="defaultDate" @confirm="onConfirmEndDate" /> -->
+            <div v-if="accounForm.bookType != 2">
+                <!-- 用户名 -->
+                <van-field v-model="userResult" is-link readonly name="username" label="姓名" placeholder="点击选择人员"
+                    @click="showUserPickerClick" validate-trigger="onSubmit" :rules="[{ validator: validatorMessage }]" />
+                <van-popup v-model:show="showUserPicker" position="bottom">
+                    <van-picker :columns="userListColumns" @confirm="onConfirmUser" @cancel="addUser" cancel-button-text="去添加"
+                        :loading="loading">
+                        <template #title>
+                            <!-- left-icon="" -->
+                            <van-search v-model="searchValue" placeholder="请输入人员姓名" @search="searchAccountUserListFuc" />
+                        </template>
+                    </van-picker>
+                </van-popup>
+                <!-- 结算状态 -->
+                <!-- <van-field v-model="bookTypeResult" is-link readonly name="status" label="结算状态" placeholder="点击选择结算状态"
+                    @click="showBookTypePicker = true" :rules="[{ required: true, message: '请选择结算状态' }]" />
+                <van-popup v-model:show="showBookTypePicker" position="bottom">
+                    <van-picker title="结算状态" :columns="accountBookStatusColumns" @confirm="onConfirmBookType"
+                        @cancel="showBookTypePicker = false" :loading="loading" />
+                </van-popup> -->
+                <!-- <van-field v-model="unpayAmount" name="accountAmount" label="未付金额(元)" readonly />
+                <van-field v-model="accounForm.totalAmount" name="accountAmount" label="总金额(元)" readonly /> -->
+                <!-- 截至日期 -->
+                <!-- <van-field v-model="endDateResult" is-link readonly name="calendar" label="截至日期" placeholder="点击选择日期"
+                    @click="endDateshowCalendar = true" />
+                <van-calendar v-model:show="endDateshowCalendar" :min-date="minDate" :max-date="maxDate"
+                    :defaultDate="defaultDate" @confirm="onConfirmEndDate" /> -->
 
-            <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" />
-            <!-- 联系地址 -->
-            <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
-                @click="showArea = true" />
-            <van-popup v-model:show="showArea" position="bottom">
-                <van-area :area-list="areaList" @confirm="onConfirmArea" @cancel="showArea = false" />
-            </van-popup>
-            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
-                v-model="accounForm.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
-            <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark"
-                name="remark" label="备注" placeholder="请输入备注信息" />
+                <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" />
+                <!-- 联系地址 -->
+                <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
+                    @click="showArea = true" />
+                <van-popup v-model:show="showArea" position="bottom">
+                    <van-area :area-list="areaList" @confirm="onConfirmArea" @cancel="showArea = false" />
+                </van-popup>
+                <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
+                    v-model="accounForm.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
+                
+                <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark"
+                    name="remark" label="备注" placeholder="请输入备注信息" />
+            </div>
         </van-cell-group>
         <van-cell title="明细信息" style="background:#F7F6F6;">
             <span style="color:red">{{ totalAmount }}元</span>

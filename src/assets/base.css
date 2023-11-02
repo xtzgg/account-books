@@ -61,7 +61,8 @@
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background);
+  background: #F7F6F6;
+  /* background: var(--color-background); */
   transition:
     color 0.5s,
     background-color 0.5s;
@@ -100,5 +101,16 @@ body {
   /** 标题栏默认颜色 */
   --van-nav-bar-background:  #f7ca45;
   /* --van-cell-value-color: black; */
+  --van-floating-bubble-background: #abda74;
 }
 
+/** 适配移动端顶部冗余一段 */
+.van-nav-bar__content {
+  padding-top: 15%;
+}
+.van-nav-bar--fixed {
+  height: 10%;
+}
+.van-nav-bar__left, .van-nav-bar__right {
+  margin-top: 15%;
+}

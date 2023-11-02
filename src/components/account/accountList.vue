@@ -68,7 +68,6 @@ const accountlist = async () => {
     "pageNum": pageNum.value,
     "pageSize": pageSize.value,
     "username": username.value,
-    "remark": remark.value,
     "mobile": mobile.value
   }).catch(() => {
     error.value = true;
@@ -140,6 +139,7 @@ const onFinish = ({ selectedOptions }: any) => {
 </script>
 
 <template>
+  <div class="fixed_header">
     <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
         <van-search class="main_search" v-model="inputSearch" clearable  placeholder="请输入账单用户姓名、手机号"
@@ -155,9 +155,8 @@ const onFinish = ({ selectedOptions }: any) => {
         @click="show = true" 
         is-link 
         arrow-direction="down"
-        label="收入40000元，支出200元"
+        label="收入40000元,支出200元"
         />
-        <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day/>
       </van-col>
       <van-col class="searchOptionTypes" span="10">
         <van-cell :title="fieldValue" 
@@ -174,12 +173,16 @@ const onFinish = ({ selectedOptions }: any) => {
             :field-names="fieldNames"
             @close="show1 = false"
             @finish="onFinish"
+            style="z-index: 1;"
           />
         </van-popup>
       </van-col>
     </van-row>
+    </div>
+    <!-- 放外边防止fixed导致组件底部按钮被导航覆盖 -->
+    <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day/>
     <!-- 1vh -->
-    <div style="margin: 0.2rem 0"></div>
+    <div style="padding-bottom: 3rem"></div>
     <van-cell  class="group-lay-out">
       <van-tabs v-model:active="active" @click-tab="onClickTab"  type="card" style="background: #F7F6F6;" title-inactive-color="black">
         <van-tab title="收入">
@@ -207,6 +210,14 @@ const onFinish = ({ selectedOptions }: any) => {
 </template>
 
 <style scoped lang="scss">
+
+.fixed_header {
+    position: fixed;
+    top: 2rem;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+}
 .demo-input-search {
   min-height: 6vh;
 }
@@ -214,7 +225,7 @@ const onFinish = ({ selectedOptions }: any) => {
   background: $main_search_background;
 }
 .infinite-list-wrapper {
-  height: 63vh;
+  height: 66vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
   margin-top: 0.1rem;

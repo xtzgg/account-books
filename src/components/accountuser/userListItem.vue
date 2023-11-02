@@ -4,14 +4,14 @@ import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance
 import { showConfirmDialog, showNotify } from 'vant';
 import { useRouter, useRoute } from 'vue-router'
 
-import { AccountUserService, type AccountUser } from '@/api/api';
+import { AccountUserService, type AccountUser,EnableStatus } from '@/api/api';
 
 // 路由对象
 const router = useRouter()
 const route = useRoute();
 
-const width_left = ref(8);
-const width_right = ref(16);
+const width_left = ref(6);
+const width_right = ref(18);
 
 // 父组件传值给子组件：账单列表数据
 const props = defineProps<{
@@ -23,8 +23,8 @@ const props = defineProps<{
 const editAccountUser = (i: number) => {
   const accountUser = props.accountUserList[i];
   router.push({
-    path: '/accountuserform',
-    query: { 'userId': accountUser.userId, 'op': 'edit' }
+    path: '/accountuseredit',
+    query: { 'userId': accountUser.userId, 'op': 'edit','role': props.role }
   })
 }
 
@@ -82,6 +82,12 @@ const container = ref();
   <van-cell v-for="(item, index) in accountUserList" style="padding: 0;" :to="'/accountuserdetail?userId='+ item.userId + '&role=' + props.role">
     <van-swipe-cell  class="van_list_s">
       <div class="item"  ref="container" >
+        <!-- 粘性状态标识 -->
+        <div style="position: absolute;right: 0.6rem;">
+          <div :class="['triangle2',item.status === 0 ? 'triangle2_error':'']" style="color:black">{{ item.status == null ? '' :  
+            EnableStatus.get(item.status)}}</div>
+          <div :class="['triangle',item.status === 0 ? 'triangle_error':'']"></div>
+        </div>
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
             姓名：
@@ -134,7 +140,7 @@ const container = ref();
   
 <style scoped lang="scss">
 .item {
-  margin: 0.1rem 0.2rem;
+  margin: 0.1rem 0rem;
   background-color: #fff;
   // padding:0.5rem;
 }
@@ -150,5 +156,28 @@ const container = ref();
   color:black
 }
 
+.triangle {
+    width: 0;
+    height: 0;
+    border-top: 0.5rem solid #DAEDC1;
+    border-right: 0.7rem solid transparent;
+    border-left: 0.7rem solid transparent;
+}
+
+.triangle_error {
+    border-top: 0.5rem solid #EDC8C1;
+}
+
+.triangle2 {
+    background-color: #DAEDC1;
+    width: 1.4rem;
+    height: 0.8rem;
+    text-align: center;
+    line-height: 1rem;
+}
+
+.triangle2_error {
+  background-color: #EDC8C1;
+}
 </style>
   

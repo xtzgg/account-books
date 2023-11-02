@@ -36,8 +36,8 @@ onMounted(() => {
   border-bottom-width: 0
 }
 
-.van-nav-bar--fixed {
-  top: 1rem; 
-  // 4.9vh
-}
+// .van-nav-bar--fixed {
+//   top: 1rem; 
+//   // 4.9vh
+// }
 </style>

@@ -149,39 +149,42 @@ const onFinish = ({ selectedOptions }: any) => {
 </script>
 
 <template>
-  <van-cell class="group-lay-out demo-input-search">
-    <!-- 搜索 -->
-    <van-search class="main_search" v-model="inputSearch" clearable placeholder="请输入账单用户姓名、手机号"
-      @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
-      <!-- <template #action>
-            <div @click="searchAccoutBooks">搜索</div>
-          </template> -->
-    </van-search>
-  </van-cell>
-  <van-row class="searchOptions" style="background-color: #f7ca45;">
-    <van-col span="1"></van-col>
-    <van-col span="10">
-      <van-field
-        v-model="currentDateResult"
-        right-icon="notes"
-        readonly
-        placeholder="选择日期"
-        style="background-color: #f7ca45;"
-        @click="showDatePicker = true"
-      />
-      <van-popup v-model:show="showDatePicker" round position="bottom">
-        <van-date-picker
-          v-model="currentDate"
-          title="选择年月"
-          :min-date="minDate"
-          :max-date="maxDate"
-          :formatter="formatter"
-          :columns-type="columnsType"
-          @confirm="onConfirm"
+  <div class="fixed_header">
+    <van-cell class="group-lay-out demo-input-search">
+      <!-- 搜索 -->
+      <van-search class="main_search" v-model="inputSearch" clearable placeholder="请输入账单用户姓名、手机号"
+        @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
+        <!-- <template #action>
+              <div @click="searchAccoutBooks">搜索</div>
+            </template> -->
+      </van-search>
+    </van-cell>
+    <van-row class="searchOptions" style="background-color: #f7ca45;">
+      <van-col span="1"></van-col>
+      <van-col span="10">
+        <van-field
+          v-model="currentDateResult"
+          right-icon="notes"
+          readonly
+          placeholder="选择日期"
+          style="background-color: #f7ca45;"
+          @click="showDatePicker = true"
         />
-      </van-popup>
-    </van-col>
-  </van-row>
+        <van-popup v-model:show="showDatePicker" round position="bottom">
+          <van-date-picker
+            v-model="currentDate"
+            title="选择年月"
+            :min-date="minDate"
+            :max-date="maxDate"
+            :formatter="formatter"
+            :columns-type="columnsType"
+            @confirm="onConfirm"
+          />
+        </van-popup>
+      </van-col>
+    </van-row>
+  </div>
+  <div style="padding-bottom: 2.7rem;"></div>
   <van-cell class="group-lay-out">
     <div class="infinite-list-wrapper">
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -197,6 +200,13 @@ const onFinish = ({ selectedOptions }: any) => {
 </template>
 
 <style scoped lang="scss">
+.fixed_header {
+    position: fixed;
+    top: 2rem;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+}
 .demo-input-search {
   min-height: 6vh;
 }
@@ -206,7 +216,7 @@ const onFinish = ({ selectedOptions }: any) => {
 }
 
 .infinite-list-wrapper {
-  height: 72vh;
+  height: 77vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
   // margin-top: 0.1rem;

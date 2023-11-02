@@ -17,5 +17,5 @@ onMounted(()=>{
 </script>
 
 <style>
-
+  
 </style>

@@ -124,6 +124,7 @@ const accountUserEdit = ()=>{
         </template> -->
       </van-search>
     </van-cell>
+    <div style="margin-bottom: 1.6rem;"></div>
     <van-cell class="group-lay-out">
       <div class="infinite-list-wrapper">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
@@ -141,14 +142,18 @@ const accountUserEdit = ()=>{
 
 <style scoped lang="scss">
 .demo-input-search {
-  height: 8vh;
+  height: 1.7rem;
   background: $main_search_background;
+  position: fixed;
+  top: 2rem;
+  left: 0;
+  width: 100%;
 }
 .main_search{
   background: $main_search_background;
 }
 .infinite-list-wrapper {
-  height: calc(80vh - 0.7rem);
+  height: calc(88vh - 1rem);
   overflow-y: hidden visible;
   overflow-x: hidden;
   padding-top: 0.1rem;

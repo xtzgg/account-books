@@ -98,7 +98,7 @@ const container = ref();
               <van-col :span="width_left" class="col_left">
                 类型：<span class="content_s">{{ item.bookTypeDesc }}</span>
               </van-col>
-              <van-col :span="width_right" class="col_right">
+              <van-col v-if="item.userId" :span="width_right" class="col_right">
                 客户：<span class="content_s">{{ item.username }}</span>
               </van-col>
             </van-row>
@@ -106,7 +106,7 @@ const container = ref();
               <van-col :span="width_left" class="col_left">
                 金额：<span class="content_s">{{ item.totalAmount }}</span>
               </van-col>
-              <van-col :span="width_right" class="col_right">
+              <van-col v-if="item.status !== 2" :span="width_right" class="col_right">
                 欠款：<span class="content_s">{{ Number(item.totalAmount) - Number(item.payAmount) }}</span>
               </van-col>
             </van-row>
@@ -128,7 +128,7 @@ const container = ref();
 <style scoped lang="scss">
 .item {
   // margin: 0.5vh 1vh;
-  margin: 0.1rem 0.2rem;
+  margin: 0.1rem 0;
   background-color: #fff;
 }
 .van_list_s {

@@ -46,9 +46,9 @@ interface PageParams {
     pageNum: number,
     pageSize: number,
     username: string,
-    remark: string,
     mobile: string,
-    status?: number
+    status?: number,
+    createDate?: string
 }
 export class AccoutListService {       // 账单接口
     // 账单查询
@@ -95,7 +95,7 @@ export class AccountUserService {     // 账单用户接口
         return request('/login', params, 'post')
     }
     // 用户查询
-    static async list(params: PageParams) {
+    static async list(params: object) {
         return request('/api/accountbooks/accountuser/list', params, 'post')
     }
     // 用户新增
@@ -117,11 +117,36 @@ export class AccountUserService {     // 账单用户接口
 
 }
 
-
+export interface User {
+    userId: number,
+    username: string,
+    mobile: string,
+    nickname: string,
+    imageUrl: string,
+    createDate: string
+}
 
 export class UserService {     // 管理用户接口
     // 用户登录
     static async login(params: object) {
         return request('/api/accountbooks/user/login', params, 'post')
+    }
+
+    // 用户详情
+    static async detail(params: object) {
+        // return request('/api/accountbooks/user/detail', params, 'post')
+        return request('/api/accountbooks/accountuser/detail', params, 'post');
+    }
+
+    // 用户编辑
+    static async edit(params: object) {
+        // return request('/api/accountbooks/user/edit', params, 'post');
+        return request('/api/accountbooks/accountuser/edit', params, 'post');
+    }
+    // 头像上传
+    // 用户登录
+    static async upload(params: object) {
+        // return request('/api/accountbooks/user/edit', params, 'post');
+        return request('/api/accountbooks/accountuser/upload', params, 'post');
     }
 }

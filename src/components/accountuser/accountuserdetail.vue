@@ -68,7 +68,7 @@ const clickRouteEdit = () => {
 </script>
 
 <template>
-    <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft">
+    <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" style="top: 1rem;">
         <template #title>
             <span v-if="'customer' === route.query.role"> 客户详情 </span>
             <span v-if="'cargo' === route.query.role"> 货主详情 </span>

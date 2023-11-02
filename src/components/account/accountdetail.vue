@@ -130,7 +130,7 @@ const clickRouteEdit = () => {
             {{ Number(accounForm.totalAmount) - Number(accounForm.payAmount) }} 元
           </van-col>
         </van-row>
-        <div v-if="accounForm.status === 1 && accounForm.userId">
+        <div v-if="accounForm.userId && accounForm.bookType != 2">
           <van-row>
             <van-col :span="width_left" class="col_left">
               <!-- <van-icon name="manager" /> -->
@@ -264,7 +264,7 @@ const clickRouteEdit = () => {
   background-color: #EDC8C1;
 }
 
-.van-nav-bar--fixed {
-  top: 4.9vh
-}
+// .van-nav-bar--fixed {
+//   top: 4.9vh
+// }
 </style>

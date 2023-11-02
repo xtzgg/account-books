@@ -23,16 +23,14 @@ const accountEditKey = ref<AccountEditKey>({
 </script>
 
 <template>
+    <div class="header_common"></div>
+    <div style="padding-bottom: 1rem"></div>
     <div style="padding-bottom: 2rem;">
-        <!-- <van-nav-bar fixed title="新增账单"/> -->
-        <!-- <div style="margin-top:0.8rem"> -->
-        <!-- offset-top = '0.5rem' -->
-        <van-tabs v-model:active="active" @click-tab="onClickTab" color="black" background="#f7ca45"
+        <van-tabs v-model:active="active"  @click-tab="onClickTab" color="black" background="#f7ca45"
             sticky
             offset-top="1rem"
             >
             <van-tab title="收入">
-                <div style="margin-top:1rem"></div>
                 <AccountForm :accountEditKey="accountEditKey"></AccountForm>
             </van-tab>
             <van-tab title="支出">
@@ -51,6 +49,15 @@ const accountEditKey = ref<AccountEditKey>({
 
 .navbartitle::after {
     border-bottom-width: 0
+}
+.header_common {
+  width: 100%;
+  background-color: rgb(247, 202, 69);
+  position: fixed;
+  top: 0rem;
+  height: 1.1rem; 
+  /* 5vh */
+  z-index: 999;
 }
 </style>
 

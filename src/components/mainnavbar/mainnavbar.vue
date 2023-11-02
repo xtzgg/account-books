@@ -32,7 +32,7 @@ const useGlobalColor = useTabbarActiveStore();
           </RouterLink>
         </van-col>
         <van-col :span="4">
-          <RouterLink to="/accountsetting"><van-tabbar-item name="setting" icon="manager-o"
+          <RouterLink to="/setting"><van-tabbar-item name="setting" icon="manager-o"
               class="tabbar-item-self">我的</van-tabbar-item>
           </RouterLink>
         </van-col>

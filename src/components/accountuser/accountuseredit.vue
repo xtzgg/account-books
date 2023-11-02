@@ -29,7 +29,7 @@ const onClickLeft = () => history.back();
 
 <template>
     <div>
-        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft">
+        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" style="top: 1rem;">
             <template #title>
                 <span v-if="'customer' === route.query.role">客户</span>
                 <span v-if="'cargo' === route.query.role">货主</span>

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import router from '@/router';
 import { showImagePreview, showToast, type ToastOptions } from 'vant';
 import { ref, onMounted } from 'vue';
 
 // 初始化加载
 onMounted(() => {
     // 样式初始化
-    let el = document.getElementsByClassName('van-cell__value')[0] as HTMLElement; 
-    el.style.color = 'black';
+    // let el = document.getElementsByClassName('van-cell__value')[0] as HTMLElement; 
+    // el.style.color = 'black';
     // 加载个人信息
     
 })
@@ -26,15 +27,26 @@ const actions = [
 const onSelect = (item: { name: string | ToastOptions | undefined; }) => {
     show.value = false;
     showToast(item.name);
+    if(item.name === '退出登录'){
+        router.push({
+            path:'/login',
+        })
+    }
 };
+// 
+const skipEdit = ()=>{
+    router.push({
+        path:'/useredit',
+    })
+}
 
 </script>
 <template>
-    <van-cell-group inset style="margin:0">
+    <van-cell-group inset style="margin:0; background-color: #F7F6F6;">
         <!-- 个人头像 -->
         <van-cell center class="user_header">
             <template #title>
-                <van-cell class="user_header_image" center value="小花" :value-class="['user_header_image_value']" is-link>
+                <van-cell class="user_header_image" center is-link>
                     <template #title>
                         <lazy-component>
                             <van-image src="https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg" round width="2rem"
@@ -44,6 +56,9 @@ const onSelect = (item: { name: string | ToastOptions | undefined; }) => {
                                 </template>
                             </van-image>
                         </lazy-component>
+                    </template>
+                    <template #value>
+                        <span style="color: black;" @click="skipEdit">小花</span>
                     </template>
                 </van-cell>
             </template>
@@ -64,16 +79,14 @@ const onSelect = (item: { name: string | ToastOptions | undefined; }) => {
             </van-grid>
         </van-cell>
         <!-- 导航栏 -->
-        <van-cell title="客户管理" value="内容" icon="friends-o" is-link to="/accountuser?role=customer" />
-        <van-cell title="货主管理" value="内容" label="卖货的老板" icon="contact-o" is-link to="/accountuser?role=cargo" />
-        <!-- <van-cell value="" is-link>
-            <template #title>
-                <span class="custom-title">账本统计</span>
-                <van-tag type="primary">蔬菜</van-tag>
-            </template>
-        </van-cell> -->
-        <van-cell title="品类管理" value="内容" icon="friends-o" is-link />
-        <van-cell title="工人管理" value="内容" icon="manager-o" is-link to="/accountuser?role=worker" />
+        <div style="padding: 0.5rem 0;">
+        <van-cell title="客户管理" value="进入" icon="friends-o" is-link to="/accountuser?role=customer" />
+        <van-cell title="货主管理" value="进入" label="卖货的老板" icon="contact-o" is-link to="/accountuser?role=cargo" />
+        </div>
+        <div>
+        <van-cell title="品类管理" value="进入" icon="friends-o" is-link to="/booktype"/>
+        <van-cell title="工人管理" value="进入" icon="manager-o" is-link to="/accountuser?role=worker" />
+        </div>
     </van-cell-group>
     <!-- 动作按钮 -->
     <van-action-sheet v-model:show="show" :actions="actions" cancel-text="取消" close-on-click-action @select="onSelect" />

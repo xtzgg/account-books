@@ -17,9 +17,8 @@ onMounted(() => {
         <span>未结清账单</span>
     </template>
   </van-nav-bar>
-  <!-- padding-bottom:10.5vh -->
-  <div style="padding-bottom: 2.1rem"></div>
-  <account-unpay-list :book-status="2"></account-unpay-list>
+  <div style="padding-bottom: 2rem"></div>
+  <account-unpay-list :book-status="1"></account-unpay-list>
   <main-navbar></main-navbar>
 </template>
 
@@ -33,8 +32,8 @@ onMounted(() => {
   border-bottom-width: 0
 }
 
-.van-nav-bar--fixed {
-  top: 1rem; 
-  // 4.9vh
-}
+// .van-nav-bar--fixed {
+//   top: 1rem; 
+//   // 4.9vh
+// }
 </style>

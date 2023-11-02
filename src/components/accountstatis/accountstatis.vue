@@ -149,13 +149,14 @@ const onClickTab = ({ title }: any) => {
             <span>收支分析</span>
         </template>
     </van-nav-bar>
+    <div style="padding-bottom: 2rem"></div>
     <van-tabs v-model:active="active" @click-tab="onClickTab" height="100px" color="black" background="#f7ca45"
      sticky
         title-active-color='blue'
-        offset-top="2rem"
+        offset-top="2.0rem"
         >
         <van-tab title="周">
-            <div style="font-size: 14px;margin-top: 2.2rem;">
+            <div style="font-size: 14px;margin-top: 0.1rem;">
                 <van-row>
                     <van-col span="1"></van-col>
                     <van-col span="11">总收入: 40000元</van-col>
@@ -178,7 +179,7 @@ const onClickTab = ({ title }: any) => {
 <style scoped lang="scss">
 .navbartitle {
   background: $main_search_background;
-  top: 1rem
+//   top: 1rem
 }
 .navbartitle::after {
   border-bottom-width: 0

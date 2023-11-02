@@ -28,7 +28,7 @@ const onClickLeft = () => history.back();
 
 <template>
     <div>
-        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" >
+        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft">
             <template #title>
                 <span>编辑账单（收入）</span>
             </template>
@@ -54,8 +54,8 @@ const onClickLeft = () => history.back();
 .navbartitle::after {
     border-bottom-width: 0
 }
-.van-nav-bar--fixed {
-    top: 4.9vh
-}
+// .van-nav-bar--fixed {
+//     top: 4.9vh
+// }
 </style>
 

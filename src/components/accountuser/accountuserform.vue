@@ -79,6 +79,7 @@ const accountUserStatusColumns = [
 const onConfirmStatus = ({ selectedOptions }: any) => {
     statusResult.value = selectedOptions[0].text;
     accountUser.status = selectedOptions[0].value;
+    showStatusPicker.value = false;
 }
 
 
@@ -128,7 +129,7 @@ const accountSubmit = async () => {
     } else {
         res = await AccountUserService.add(params)
     }
-    // 编辑成功或失败
+    // 添加或编辑成功/失败
     // 关闭遮罩层
     overlayShow.value = false
     if (res.status === 200) {
