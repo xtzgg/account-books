@@ -37,7 +37,9 @@ const bookTypeList = ref([{
     code: 'ls',
     details: []
 }])
-
+const beforeClose = ()=>{
+    console.log('删除该条目');
+}
 const bottomActive = ref(0);
 </script>
 
@@ -79,7 +81,7 @@ const bottomActive = ref(0);
                                         </template>
                                     </van-cell>
                                     <template #right>
-                                        <van-button square type="primary" icon="delete-o" style="background-color:red" @click="beforeClose('edit', index)" />
+                                        <van-button square type="primary" icon="delete-o" style="background-color:red" @click="beforeClose" />
                                     </template>
                                 </van-swipe-cell>
                                 <hr/>
@@ -104,7 +106,7 @@ const bottomActive = ref(0);
         </van-tabs>
         <!-- </div> -->
         <van-tabbar class="button_bottom_s" v-model="bottomActive" active-color="#fff">
-            <van-tabbar-item class="tab_edit" icon="" style="font-size: 20px;" @click="clickRouteEdit">添加</van-tabbar-item>
+            <van-tabbar-item class="tab_edit" icon="" style="font-size: 20px;" >添加</van-tabbar-item>
             <!-- <van-tabbar-item class="tab_cal_amount" icon=""
             style="font-size: 20px;">删除</van-tabbar-item> -->
         </van-tabbar>
