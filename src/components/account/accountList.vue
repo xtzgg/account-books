@@ -187,7 +187,7 @@ const onFinish = ({ selectedOptions }: any) => {
       <van-tabs v-model:active="active" @click-tab="onClickTab"  type="card" style="background: #F7F6F6;" title-inactive-color="black">
         <van-tab title="收入">
 
-          <van-cell class="group-lay-out">
+          <van-cell class="group-lay-out" v-if="accountListData && accountListData.length > 0">
             <div class="infinite-list-wrapper">
               <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
                 <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
@@ -199,7 +199,7 @@ const onFinish = ({ selectedOptions }: any) => {
               </van-pull-refresh>
             </div>
           </van-cell>
-
+          <van-empty v-if="!accountListData || accountListData.length === 0" :image-size="[200, 200]" style="background: #F7F6F6;" image="search" description="没有数据" />
         </van-tab>
         <van-tab title="支出">
 
@@ -225,7 +225,7 @@ const onFinish = ({ selectedOptions }: any) => {
   background: $main_search_background;
 }
 .infinite-list-wrapper {
-  height: 66vh;
+  height: 67vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
   margin-top: 0.1rem;

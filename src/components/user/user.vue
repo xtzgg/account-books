@@ -2,6 +2,7 @@
 import router from '@/router';
 import { showImagePreview, showToast, type ToastOptions } from 'vant';
 import { ref, onMounted } from 'vue';
+import { MemberService } from '@/api/api'
 
 // 初始化加载
 onMounted(() => {
@@ -26,8 +27,9 @@ const actions = [
 ];
 const onSelect = (item: { name: string | ToastOptions | undefined; }) => {
     show.value = false;
-    showToast(item.name);
-    if(item.name === '退出登录'){
+    // showToast(item.name);
+    if(item.name === '退出登录' || item.name === '切换账户'){
+        logout();
         router.push({
             path:'/login',
         })
@@ -35,9 +37,14 @@ const onSelect = (item: { name: string | ToastOptions | undefined; }) => {
 };
 // 
 const skipEdit = ()=>{
-    router.push({
-        path:'/useredit',
-    })
+    router.push('useredit');
+}
+// 退出登录
+const logout = async ()=>{
+    const res: any = await MemberService.logout({});
+    if (res.data.code !== 200) {
+        showToast('登出失败');
+    }
 }
 
 </script>
@@ -57,9 +64,7 @@ const skipEdit = ()=>{
                             </van-image>
                         </lazy-component>
                     </template>
-                    <template #value>
-                        <span style="color: black;" @click="skipEdit">小花</span>
-                    </template>
+                    <span style="color: black;" @click="skipEdit">小花</span>
                 </van-cell>
             </template>
             <!-- 使用 right-icon 插槽来自定义右侧图标 -->

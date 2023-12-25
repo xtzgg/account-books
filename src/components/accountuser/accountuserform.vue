@@ -140,15 +140,11 @@ const accountSubmit = async () => {
         });
         // 延迟1s后跳转到上一页面
         setTimeout(() => {
-            if (props.accountEditKey.op === 'edit') {
-                router.go(-1);
-            } else {
-                router.go(0);
-            }
+            router.go(-1);
         }, 1000)
     } else {
-        showNotify({
-            type: 'danger',
+        showToast({
+            type: 'fail',
             message: '保存失败',
             duration: 1000,
         });

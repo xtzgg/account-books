@@ -19,7 +19,6 @@ declare module 'vue' {
     Accountuseredit: typeof import('./src/components/accountuser/accountuseredit.vue')['default']
     Accountuserform: typeof import('./src/components/accountuser/accountuserform.vue')['default']
     Booktype: typeof import('./src/components/common/booktype.vue')['default']
-    ElTree: typeof import('element-plus/es')['ElTree']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']
     IconEcosystem: typeof import('./src/components/icons/IconEcosystem.vue')['default']

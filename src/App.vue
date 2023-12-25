@@ -7,6 +7,7 @@ import { RouterView } from 'vue-router'
 
 <template>
   <RouterView/>
+  <van-watermark content="accountbook" opacity="0.2" text-color="#abda74"/>
 </template>
 
 <style scoped type="scss">
@@ -17,7 +18,6 @@ import { RouterView } from 'vue-router'
   position: fixed;
   top: 0rem;
   height: 1.1rem; 
-  /* 5vh */
   z-index: 999;
 }
 </style>

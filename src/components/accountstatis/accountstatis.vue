@@ -19,9 +19,13 @@ nextTick(() => {
     initEchartsType();
 })
 // 初始化图标
+var myChart: any;
 const initEchartsTotal = () => {
+    if(myChart){
+        myChart.dispose(); // 销毁
+    }
     var chartDom = document.getElementById('main')!;
-    var myChart = echarts.init(chartDom);
+    myChart = echarts.init(chartDom);
     var option: EChartsOption = {
         title: {
             text: '汇总'
@@ -153,18 +157,16 @@ const onClickTab = ({ title }: any) => {
     <van-tabs v-model:active="active" @click-tab="onClickTab" height="100px" color="black" background="#f7ca45"
      sticky
         title-active-color='blue'
-        offset-top="2.0rem"
-        >
+        offset-top="2rem"
+        >   
         <van-tab title="周">
-            <div style="font-size: 14px;margin-top: 0.1rem;">
+            <div style="font-size: 14px;margin-top: 0.2rem;">
                 <van-row>
-                    <van-col span="1"></van-col>
-                    <van-col span="11">总收入: 40000元</van-col>
+                    <van-col span="12" style="text-indent: 0.5rem;">总收入: 40000元</van-col>
                     <van-col span="12">总支出: 40000元</van-col>
                 </van-row>
                 <van-row>
-                    <van-col span="1"></van-col>
-                    <van-col span="23">未收款: 40000元</van-col>
+                    <van-col span="12"  style="text-indent: 0.5rem;">未收款: 40000元</van-col>
                 </van-row>
                 <div id="main" style="width: 100%;height:60vh;margin-top:0.2rem;margin-bottom:0.5rem"></div>
                 <div id="main1" style="width: 100%;height:60vh;margin-bottom:2rem"></div>

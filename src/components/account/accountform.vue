@@ -57,7 +57,7 @@ const initAccountBooks = async (id: number) => {
 // const onClickLeft = () => history.back();
 
 // 样式相关属性
-const overlayCustomStyle = { 'opacity': '0.7' }
+// const overlayCustomStyle = { 'opacity': '0.7' }
 const textAreaSize = { maxHeight: 100, minHeight: 0 }
 const showUserPicker = ref(false);
 const showBookTypePicker = ref(false);
@@ -289,7 +289,8 @@ const accountConfirmSubmit = async () => {
         accountSubmit();
     }).catch(() => {
         // on cancel
-        console.log('已取消')
+        console.log('已取消');
+        overlayShow.value = false;
     });
 }
 
@@ -356,8 +357,11 @@ const showUserPickerClick = () => {
 }
 const addUser = () => {
     router.push({
-        path: '/accountuserform',
-        query: { 'op': 'add' }
+        path: '/accountuseredit',
+        query: {
+            'op': 'add',
+            'role': 'customer'
+        }
     })
 }
 // 新增样式，后续修改
@@ -493,7 +497,7 @@ const validatorMessage = () => {
             </van-button>
         </div>
     </van-form>
-    <van-overlay :show="overlayShow" :custom-style="overlayCustomStyle">
+    <van-overlay :show="overlayShow" :custom-style="{ 'opacity': '0.7' }">
         <van-loading class="wrapper-loading" type="spinner" size="50px" color="#1989fa" />
     </van-overlay>
     

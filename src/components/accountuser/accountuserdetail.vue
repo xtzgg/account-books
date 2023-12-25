@@ -68,7 +68,7 @@ const clickRouteEdit = () => {
 </script>
 
 <template>
-    <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" style="top: 1rem;">
+    <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft">
         <template #title>
             <span v-if="'customer' === route.query.role"> 客户详情 </span>
             <span v-if="'cargo' === route.query.role"> 货主详情 </span>
@@ -139,9 +139,6 @@ const clickRouteEdit = () => {
 </template>
 
 <style scoped lang="scss">
-.navbartitle {
-    background: $main_search_background;
-}
 
 .button_bottom_s .tab_edit {
     background-color: $bottom_button_background
@@ -186,7 +183,7 @@ const clickRouteEdit = () => {
     background-color: #EDC8C1;
 }
 
-.van-nav-bar--fixed {
-    top: 4.9vh
-}
+// .van-nav-bar--fixed {
+//     top: 4.9vh
+// }
 </style>

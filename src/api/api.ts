@@ -12,7 +12,7 @@ EnableStatus.set(0, '禁用');
 EnableStatus.set(1, '启用');
 
 /** 编辑新增通用 */
-export interface AccountEditKey {   
+export interface AccountEditKey {
     id?: number | null,
     userId?: number,
     role?: string,
@@ -148,5 +148,38 @@ export class UserService {     // 管理用户接口
     static async upload(params: object) {
         // return request('/api/accountbooks/user/edit', params, 'post');
         return request('/api/accountbooks/accountuser/upload', params, 'post');
+    }
+}
+
+
+export class MemberService {     // 管理会员接口
+    // 用户名密码登录
+    static async login(params: object) {
+        return request('/api/accountbooks/login', params, 'form')
+    }
+
+    // 短信验证码登录
+    static async loginsms(params: object) {
+        return request('/api/accountbooks/login/sms', params, 'form')
+    }
+
+    // 获取短信验证码
+    static async getSmsCode(params: object) {
+        return request('/api/accountbooks/member/getVerifyCode', params, 'post')
+    }
+
+    // 图片验证码登录
+    static async loginImageCode(params: object) {
+        return request('/api/accountbooks/login/image/code', params, 'form')
+    }
+
+    // 获取图片验证码
+    static async getImageCode(params: object) {
+        return request('/api/accountbooks/member/getImageCode', params, 'post')
+    }
+
+    // 用户名密码登录
+    static async logout(params: object) {
+        return request('/api/accountbooks/member/logout', params, 'post')
     }
 }

@@ -28,23 +28,8 @@ const router = createRouter({
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       // component: () => import('../views/UserMain.vue')
-    },{
-      path: '/accountform',
-      name: 'accountform',
-      component: () => import('../components/account/accountform.vue')
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/UserMain.vue')
-    },{
-      path: '/accountuserform',
-      name: 'accountuserform',
-      component: () => import('../components/accountuser/accountuserform.vue')
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      // component: () => import('../views/UserMain.vue')
-    },{
+    }
+    ,{
       path: '/accountstatis',
       name: 'accountstatis',
       component: () => import('../components/accountstatis/accountstatis.vue')

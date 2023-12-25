@@ -114,7 +114,7 @@ const showDatePicker = ref(false);
 const createDate = ref('');
 const currentDate = ref<string[]>([]);
 const currentDateResult = ref('');
-const columnsType = ref(['year', 'month']);
+const columnsType = ref<DatePickerColumnType[]>(['year', 'month']);
 const formatter = (type: string, option: any) => {
       if (type === 'year') {
         option.text += '年';
@@ -161,15 +161,18 @@ const onFinish = ({ selectedOptions }: any) => {
     </van-cell>
     <van-row class="searchOptions" style="background-color: #f7ca45;">
       <van-col span="1"></van-col>
-      <van-col span="10">
+      <van-col span="9">
         <van-field
           v-model="currentDateResult"
-          right-icon="notes"
           readonly
           placeholder="选择日期"
           style="background-color: #f7ca45;"
           @click="showDatePicker = true"
-        />
+        >
+          <template #right-icon>
+            <van-icon name="calendar-o"  size="0.6rem" color="black"/>
+          </template>
+        </van-field>
         <van-popup v-model:show="showDatePicker" round position="bottom">
           <van-date-picker
             v-model="currentDate"
@@ -185,7 +188,7 @@ const onFinish = ({ selectedOptions }: any) => {
     </van-row>
   </div>
   <div style="padding-bottom: 2.7rem;"></div>
-  <van-cell class="group-lay-out">
+  <van-cell class="group-lay-out" v-if="accountListData && accountListData.length > 0">
     <div class="infinite-list-wrapper">
       <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
         <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
@@ -197,6 +200,7 @@ const onFinish = ({ selectedOptions }: any) => {
       </van-pull-refresh>
     </div>
   </van-cell>
+  <van-empty v-if="!accountListData || accountListData.length === 0" :image-size="[200, 200]" style="background: #F7F6F6;" image="search" description="没有数据" />
 </template>
 
 <style scoped lang="scss">
@@ -216,7 +220,7 @@ const onFinish = ({ selectedOptions }: any) => {
 }
 
 .infinite-list-wrapper {
-  height: 77vh;
+  height: 73vh;
   overflow-y: hidden visible;
   overflow-x: hidden;
   // margin-top: 0.1rem;

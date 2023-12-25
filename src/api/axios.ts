@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { showMessage } from "./status";   // 引入状态码文件
-import { ElMessage } from 'element-plus'  // 引入el 提示框，这个项目里用什么组件库这里引什么
-import qs from 'qs'
+import { showToast } from 'vant'  // 引入el 提示框，这个项目里用什么组件库这里引什么
+import router from '../router/index';
 
 // 设置接口超时时间
 axios.defaults.timeout = 60000;
@@ -14,8 +14,10 @@ axios.defaults.baseURL = import.meta.env.BASE_URL;
 axios.interceptors.request.use(
   config => {
     // 配置请求头
-    config.headers.set('Content-Type','application/json;charset=UTF-8')
-    config.headers.set('token','')
+    if(!config.headers.get("Content-Type")){
+      config.headers.set('Content-Type','application/json;charset=UTF-8')
+    }
+    config.headers.set('token',sessionStorage.getItem('token'))
     return config;
   },
   error => {
@@ -35,7 +37,7 @@ axios.interceptors.response.use(
       showMessage(response.status);           // 传入响应码，匹配响应码对应信息
       return Promise.reject(response.data);
     } else {
-      ElMessage.warning('网络连接异常,请稍后再试!');
+      showToast('网络连接异常,请稍后再试!');
     }
   }
 );
@@ -56,10 +58,24 @@ export function request(url = '', params = {}, type = 'POST') {
         url,
         data: params
       })
-    }
+    } else if (type.toUpperCase() === 'FORM') {
+      promise = axios({
+        method: 'POST',
+        headers:{ 'content-type': 'application/x-www-form-urlencoded' },
+        url,
+        data: params,
+      })
+    } 
     //处理返回
     promise?.then(res => {
-      resolve(res)
+      // 跳转到登录页
+      if(res.data && res.data.code === -2){
+        router.push({
+          path:'/login',
+        });
+      } else {
+        resolve(res);
+      }
     }).catch(err => {
       reject(err)
     })

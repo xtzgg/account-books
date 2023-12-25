@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance } from 'vue'
-import { showConfirmDialog, showNotify } from 'vant';
+import { showConfirmDialog, showToast } from 'vant';
 import { useRouter, useRoute } from 'vue-router'
 
 import { AccountUserService, type AccountUser,EnableStatus } from '@/api/api';
@@ -58,7 +58,7 @@ const deleteAccountUser = async (i: number) => {
     'userId': accountBook.userId
   })
   if(res.status == 200 && res.data.code == 200) {
-    showNotify({
+    showToast({
       type: 'success',
       message: '删除成功',
       duration: 1000,
@@ -68,8 +68,8 @@ const deleteAccountUser = async (i: number) => {
       location.reload();
     }, 1000)
   } else {
-    showNotify({
-      type: 'danger',
+    showToast({
+      type: 'fail',
       message: res.data.msg,
       duration: 3000,
     });

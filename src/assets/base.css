@@ -106,11 +106,11 @@ body {
 
 /** 适配移动端顶部冗余一段 */
 .van-nav-bar__content {
-  padding-top: 15%;
+  padding-top: 1.5rem;
 }
 .van-nav-bar--fixed {
-  height: 10%;
+  height: 2.2rem;
 }
 .van-nav-bar__left, .van-nav-bar__right {
-  margin-top: 15%;
+  margin-top: 1.5rem;
 }

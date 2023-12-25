@@ -29,13 +29,13 @@ const onClickLeft = () => history.back();
 
 <template>
     <div>
-        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft" style="top: 1rem;">
+        <van-nav-bar fixed left-text="返回" left-arrow @click-left="onClickLeft">
             <template #title>
+                <span v-if="route.query.op === 'add'">添加</span>
                 <span v-if="'customer' === route.query.role">客户</span>
                 <span v-if="'cargo' === route.query.role">货主</span>
                 <span v-if="'worker' === route.query.role">工人</span>
                 <span v-if="route.query.op === 'edit'">编辑</span>
-                <span v-if="route.query.op === 'add'">添加</span>
             </template>
         </van-nav-bar>
         <div style="padding-top:2.2rem">
@@ -45,16 +45,6 @@ const onClickLeft = () => history.back();
 </template>
 
 <style scoped lang="scss">
-.navbartitle {
-    background: $main_search_background;
-}
 
-.navbartitle::after {
-    border-bottom-width: 0
-}
-
-.van-nav-bar--fixed {
-    top: 4.9vh
-}
 </style>
 

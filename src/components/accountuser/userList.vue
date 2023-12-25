@@ -3,7 +3,10 @@ import UserListItem from './userListItem.vue'
 import { computed, ref,reactive,onMounted} from 'vue'
 import 'vant/es/dialog/style';
 import { AccountUserService, type AccountUser } from '@/api/api'
+import {useRouter,useRoute} from 'vue-router'
 
+
+const router = useRouter();
 // 初始化加载
 const dialogFormVisible = ref(false)
 
@@ -110,7 +113,16 @@ const accountUserEdit = ()=>{
   dialogFormVisible.value = true
 
 }
-
+const bottomActive = ref(0);
+const addUser = () => {
+  router.push({
+    path: '/accountuseredit',
+    query: {
+      op: 'add',
+      role: props.role
+    }
+  })
+}
 </script>
 
 <template>
@@ -126,7 +138,7 @@ const accountUserEdit = ()=>{
     </van-cell>
     <div style="margin-bottom: 1.6rem;"></div>
     <van-cell class="group-lay-out">
-      <div class="infinite-list-wrapper">
+      <div class="infinite-list-wrapper" v-if="accountUserList && accountUserList.length > 0">
         <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
           <van-list v-model:loading="loading" v-model:error="error" error-text="请求失败，点击重新加载" :finished="noMore"
             finished-text="没有更多了" @load="load">
@@ -136,7 +148,13 @@ const accountUserEdit = ()=>{
         </van-pull-refresh>
       </div>
     </van-cell>
+    <van-empty v-if="!accountUserList || accountUserList.length === 0" :image-size="[200, 200]" style="background: #F7F6F6;" image="search" description="没有数据" />
   </van-cell-group>
+  <van-tabbar class="button_bottom_s" v-model="bottomActive" active-color="#fff">
+            <van-tabbar-item class="tab_edit" icon="" style="font-size: 20px;" @click="addUser">添加</van-tabbar-item>
+            <!-- <van-tabbar-item class="tab_cal_amount" icon=""
+            style="font-size: 20px;">删除</van-tabbar-item> -->
+        </van-tabbar>
 </template>
 
 
@@ -153,7 +171,7 @@ const accountUserEdit = ()=>{
   background: $main_search_background;
 }
 .infinite-list-wrapper {
-  height: calc(88vh - 1rem);
+  height: calc(82vh - 1rem);
   overflow-y: hidden visible;
   overflow-x: hidden;
   padding-top: 0.1rem;
@@ -172,5 +190,9 @@ const accountUserEdit = ()=>{
 
 .group-lay-out {
   padding: 0;
+}
+
+.tab_edit {
+  background-color: $bottom_button_background
 }
 </style>

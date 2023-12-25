@@ -133,11 +133,13 @@ const onClickLeft = () => history.back();
         <van-cell title="基础信息" style="background:#F7F6F6;" />
         <van-cell-group inset>
             <!-- 用户名 -->
-            <van-field v-model="user.username" name="username" label="姓名"  maxlength="20" placeholder="请输入姓名" />
+            <van-field v-model="user.username" name="username" label="账号"  maxlength="20" placeholder="请输入登录账号" />
             <!-- 用户昵称 -->
-            <van-field v-model="user.nickname" name="nickname" label="昵称" maxlength="20" placeholder="请输入昵称,不超过20个字符" />
+            <van-field v-model="user.nickname" required 
+            :rules="[{ required: true, message: '请填写昵称' }]"
+            name="nickname" label="昵称" maxlength="20" placeholder="请输入昵称,不超过20个字符" />
             <!-- 电话 -->
-            <van-field v-model="user.mobile" name="mobile" label="联系电话" maxlength="20" placeholder="请输入联系电话" />
+            <van-field v-model="user.mobile" name="mobile" label="手机号" maxlength="20" placeholder="请输入手机号" />
             <!-- 头像上传 -->
             <van-field name="uploader" label="头像上传">
                 <template #input>
@@ -165,7 +167,7 @@ const onClickLeft = () => history.back();
     height: 100%;
 }
 
-.van-nav-bar--fixed {
-    top: 4.9vh
-}
+// .van-nav-bar--fixed {
+//     top: 4.9vh
+// }
 </style>
