@@ -63,7 +63,7 @@ const login = async () => {
     sessionStorage.setItem('token', user.token);
     sessionStorage.setItem('nickname', user.nickName);
     sessionStorage.setItem('phone', user.phone);
-    router.push({
+    router.replace({
         path: '/',
     })
   }

@@ -70,7 +70,7 @@ export function request(url = '', params = {}, type = 'POST') {
     promise?.then(res => {
       // 跳转到登录页
       if(res.data && res.data.code === -2){
-        router.push({
+        router.replace({
           path:'/login',
         });
       } else {

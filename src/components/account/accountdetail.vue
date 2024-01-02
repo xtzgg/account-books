@@ -1,62 +1,65 @@
 <script setup lang="ts">
-
 // 左滑出现操作按钮
-import 'vant/es/dialog/style';
-import { useRouter, useRoute } from 'vue-router'
+import "vant/es/dialog/style";
+import { useRouter, useRoute } from "vue-router";
 
-import { type AccountBook, AccoutListService, BookStatus } from '@/api/api';
-import { ref, computed, reactive, onMounted } from 'vue'
+import { type AccountBook, IncomeOrderService,BookTypeInCome, BookStatus } from "@/api/api";
+import { ref, computed, reactive, onMounted } from "vue";
 
 // 路由对象
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 // 样式
 const width_left = ref(8);
 const width_right = ref(16);
 
 // 初始化详情
 onMounted(() => {
-  console.log(route.query.id);
-  initAccountBook(Number(route.query.id));
-})
+  console.log(route.query.incomeOrderId);
+  initAccountBook(Number(route.query.incomeOrderId));
+});
 
 // 初始化
 const accounForm: AccountBook = reactive({
-  id: null,
+  incomeOrderId: null,
   userId: null,
-  username: '',
+  username: "",
   status: null,
-  totalAmount: '',
-  payAmount: '',
+  totalMoney: "",
+  paidMoney: "",
+  unpaidMoney: "",
+  day: "",
+  type: null,
+  typeDesc: '',
   bookType: null,
-  bookTypeDesc: '',
-  mobile: '',
-  area: '',
-  areaCode: '',
-  areaDetail: '',
-  remark: '',
-  createDate: '',
+  bookTypeDesc: "",
+  mobile: "",
+  remark: "",
+  createDate: "",
+  address:"",
   details: [{
-    name: '',
-    amount: '',
-    weight: ''
-  }]
-})
+        productTypeId: null,
+        productTypeName: '',
+        money: '',
+        weight: ''
+    }]
+});
 
 const statusDesc = computed(() => {
   console.log(accounForm.status);
-  let tmp = accounForm.status == null ? '' : BookStatus.get(accounForm.status);
+  let tmp = accounForm.status == null ? "" : BookStatus.get(accounForm.status);
   console.log(tmp);
   return tmp;
-})
+});
 // 初始化账本信息
-const initAccountBook = async (id: number) => {
-  const res: any = await AccoutListService.detail({ 'id': id });
-  if (res.data) {
-    Object.assign(accounForm, res.data);
-    // TODO 参数转化
+const initAccountBook = async (incomeOrderId: number) => {
+  const res: any = await IncomeOrderService.detail({
+    incomeOrderId: incomeOrderId,
+  });
+  if (res.data.data) {
+    Object.assign(accounForm, res.data.data);
   }
-}
+};
 // 返回上一级
 const onClickLeft = () => history.back();
 
@@ -66,10 +69,10 @@ const active = ref(0);
 // 跳转编辑页面
 const clickRouteEdit = () => {
   router.push({
-    path: '/accountedit',
-    query: { 'id': accounForm.id, 'op': 'edit' }
-  })
-}
+    path: "/accountedit",
+    query: { incomeOrderId: accounForm.incomeOrderId, op: "edit" },
+  });
+};
 </script>
 
 <template>
@@ -78,59 +81,67 @@ const clickRouteEdit = () => {
       <span>账单详情（收入）</span>
     </template>
   </van-nav-bar>
-  <div style="padding-top: 2.2rem;"></div>
-  <div style="padding-bottom: 2rem;">
-    <van-cell-group style="margin-bottom: 0.5rem;background-color: #F7F6F6;" ref="container">
+  <div style="padding-top: 2.2rem"></div>
+  <div style="padding-bottom: 2rem">
+    <van-cell-group
+      style="margin-bottom: 0.5rem; background-color: #f7f6f6"
+      ref="container"
+    >
       <van-cell>
         <!-- 粘性状态标识 -->
         <van-sticky :container="container" :offset-right="20">
-          <div style="position: absolute;right: 0;">
-            <div :class="['triangle2', accounForm.status === 1 ? 'triangle2_error' : '']" style="color: black;">{{ statusDesc
-            }}</div>
-            <div :class="['triangle', accounForm.status === 1 ? 'triangle_error' : '']"></div>
+          <div style="position: absolute; right: 0">
+            <div
+              :class="[
+                'triangle2',
+                accounForm.status === 2 ? 'triangle2_error' : '',
+              ]"
+              style="color: black"
+            >
+              {{ statusDesc }}
+            </div>
+            <div
+              :class="[
+                'triangle',
+                accounForm.status === 2 ? 'triangle_error' : '',
+              ]"
+            ></div>
           </div>
         </van-sticky>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            类型
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 类型 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ accounForm.bookTypeDesc }}
+            {{ accounForm.typeDesc }}
           </van-col>
         </van-row>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            时间
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 时间 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ accounForm.createDate }}
+            {{ accounForm.day }}
           </van-col>
         </van-row>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            总金额
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 总金额 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ accounForm.totalAmount }} 元
+            {{ accounForm.totalMoney }} 元
           </van-col>
         </van-row>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            已付金额
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 已付金额 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ accounForm.payAmount }} 元
+            {{ accounForm.paidMoney }} 元
           </van-col>
         </van-row>
         <van-row v-if="accounForm.status === 1 && accounForm.userId">
-          <van-col :span="width_left" class="col_left">
-            未付金额
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 未付金额 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ Number(accounForm.totalAmount) - Number(accounForm.payAmount) }} 元
+            {{
+              Number(accounForm.unpaidMoney)
+            }}
+            元
           </van-col>
         </van-row>
-        <div v-if="accounForm.userId && accounForm.bookType != 2">
+        <div v-if="accounForm.username && accounForm.type != 2">
           <van-row>
             <van-col :span="width_left" class="col_left">
               <!-- <van-icon name="manager" /> -->
@@ -141,37 +152,37 @@ const clickRouteEdit = () => {
             </van-col>
           </van-row>
           <van-row>
-            <van-col :span="width_left" class="col_left">
-              联系号码
-            </van-col>
+            <van-col :span="width_left" class="col_left"> 联系号码 </van-col>
             <van-col :span="width_right" class="col_right">
               {{ accounForm.mobile }}
             </van-col>
           </van-row>
-          <van-row>
-            <van-col :span="width_left" class="col_left">
-              地址
-            </van-col>
+          <!-- <van-row>
+            <van-col :span="width_left" class="col_left"> 地址 </van-col>
             <van-col :span="width_right" class="col_right">
-              {{ accounForm.area == null ? '' : accounForm.area }}
+              {{ accounForm.area == null ? "" : accounForm.area }}
+            </van-col>
+          </van-row> -->
+          <van-row>
+            <van-col :span="width_left" class="col_left"> 详细地址 </van-col>
+            <van-col :span="width_right" class="col_right">
+              <van-text-ellipsis
+                :content="
+                  accounForm.address == null ? '' : accounForm.address
+                "
+                expand-text="展开"
+                collapse-text="收起"
+              />
             </van-col>
           </van-row>
           <van-row>
-            <van-col :span="width_left" class="col_left">
-              详细地址
-            </van-col>
+            <van-col :span="width_left" class="col_left"> 备注 </van-col>
             <van-col :span="width_right" class="col_right">
-              <van-text-ellipsis :content="accounForm.areaDetail == null ? '' : accounForm.areaDetail" expand-text="展开"
-                collapse-text="收起" />
-            </van-col>
-          </van-row>
-          <van-row>
-            <van-col :span="width_left" class="col_left">
-              备注
-            </van-col>
-            <van-col :span="width_right" class="col_right">
-              <van-text-ellipsis :content="accounForm.remark == null ? '' : accounForm.remark" expand-text="展开"
-                collapse-text="收起" />
+              <van-text-ellipsis
+                :content="accounForm.remark == null ? '' : accounForm.remark"
+                expand-text="展开"
+                collapse-text="收起"
+              />
             </van-col>
           </van-row>
         </div>
@@ -180,39 +191,47 @@ const clickRouteEdit = () => {
     <van-cell-group v-for="(detail, index1) in accounForm.details">
       <van-cell>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            品类
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 品类 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ detail.name }}
+            {{ detail.productTypeName }}
           </van-col>
         </van-row>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            金额
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 金额 </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ detail.amount }} 元
+            {{ detail.money }} 元
           </van-col>
         </van-row>
         <van-row>
-          <van-col :span="width_left" class="col_left">
-            重量
-          </van-col>
+          <van-col :span="width_left" class="col_left"> 重量 </van-col>
           <van-col :span="width_right" class="col_right">
             {{ detail.weight }} 公斤
           </van-col>
         </van-row>
       </van-cell>
-      <van-cell style="padding-top: 0px; padding-bottom: 0px;">
-        <van-divider v-if="accounForm.details.length - 1 != index1" style="background-color: black;margin:0;" />
+      <van-cell style="padding-top: 0px; padding-bottom: 0px">
+        <van-divider
+          v-if="accounForm.details.length - 1 != index1"
+          style="background-color: black; margin: 0"
+        />
       </van-cell>
     </van-cell-group>
   </div>
   <van-tabbar class="button_bottom_s" v-model="active" active-color="#fff">
-    <van-tabbar-item class="tab_edit" icon="" style="font-size: 20px;" @click="clickRouteEdit">编辑</van-tabbar-item>
-    <van-tabbar-item v-if="accounForm.status === 1" class="tab_cal_amount" icon=""
-      style="font-size: 20px;">结款</van-tabbar-item>
+    <van-tabbar-item
+      class="tab_edit"
+      icon=""
+      style="font-size: 20px"
+      @click="clickRouteEdit"
+      >编辑</van-tabbar-item
+    >
+    <van-tabbar-item
+      v-if="accounForm.status === 2"
+      class="tab_cal_amount"
+      icon=""
+      style="font-size: 20px"
+      >结款</van-tabbar-item
+    >
   </van-tabbar>
 </template>
 
@@ -222,11 +241,11 @@ const clickRouteEdit = () => {
 }
 
 .button_bottom_s .tab_edit {
-  background-color: $bottom_button_background
+  background-color: $bottom_button_background;
 }
 
 .button_bottom_s .tab_cal_amount {
-  background-color: #f3cabe
+  background-color: #f3cabe;
 }
 
 .col_left {
@@ -241,14 +260,14 @@ const clickRouteEdit = () => {
 .triangle {
   width: 0;
   height: 0;
-  border-top: 0.5rem solid #DAEDC1;
+  border-top: 0.5rem solid #daedc1;
   // $base_background;
   border-right: 0.7rem solid transparent;
   border-left: 0.7rem solid transparent;
 }
 
 .triangle2 {
-  background-color: #DAEDC1;
+  background-color: #daedc1;
   // $base_background;
   width: 1.4rem;
   height: 0.8rem;
@@ -257,11 +276,11 @@ const clickRouteEdit = () => {
 }
 
 .triangle_error {
-  border-top: 0.5rem solid #EDC8C1;
+  border-top: 0.5rem solid #edc8c1;
 }
 
 .triangle2_error {
-  background-color: #EDC8C1;
+  background-color: #edc8c1;
 }
 
 // .van-nav-bar--fixed {

@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import accountListItem from './accountListItem.vue'
 import { computed, ref, defineProps, toRefs, onMounted, reactive } from 'vue'
-import { type AccountBook, AccoutListService, type AccountUser } from '@/api/api'
+import { type AccountBook, IncomeOrderService, type AccountUser } from '@/api/api'
 import { showToast } from 'vant'
 
 import 'vant/es/dialog/style';
 // 初始化加载
 onMounted(() => {
-  inputSearch.value = ''
-  accountlist();
+  inputSearch.value = '';
   // 日历显示初始化
   const nowDate = new Date();
   date.value = `${formatDate(nowDate)} - ${formatDate(nowDate)}`;
+  startTime.value = `${formatDate2(nowDate)}`;
+  endTime.value = `${formatDate2(nowDate)}`;
+  searchAccoutBooks();
 })
 
 // 账单搜索框
@@ -19,9 +21,13 @@ const inputSearch = ref('')
 const pageNum = ref(1)
 const pageSize = ref(8)
 const total = ref(0)
-const totalAmount = ref('')
+const totalMoney = ref('')
 const mobile = ref('')
 const username = ref('')
+const orderType = ref<number | null>(null)
+const name = ref('')
+const startTime = ref('')
+const endTime = ref('')
 const remark = ref('')
 // 滚动翻页
 const count = ref(8)
@@ -42,7 +48,7 @@ const load = () => {
     if (refreshing.value) {
       accountListData.value = [];
       count.value = total.value = 0
-      totalAmount.value = ''
+      totalMoney.value = ''
       refreshing.value = false;
     }
     accountlist();
@@ -53,7 +59,7 @@ const load = () => {
 const onRefresh = () => {
   // 清空列表数据
   count.value = total.value = 0
-  totalAmount.value = ''
+  totalMoney.value = ''
   pageNum.value = 1
   // 重新加载数据
   // 将 loading 设置为 true，表示处于加载状态
@@ -64,21 +70,23 @@ const onRefresh = () => {
 // 获取账单列表
 const accountListData = ref<AccountBook[]>([]);
 const accountlist = async () => {
-  const res: any = await AccoutListService.list({
+  const res: any = await IncomeOrderService.list({
     "pageNum": pageNum.value,
     "pageSize": pageSize.value,
-    "username": username.value,
-    "mobile": mobile.value
+    "orderType": orderType.value,
+    "name": name.value,
+    "startTime": startTime.value,
+    "endTime": endTime.value
   }).catch(() => {
     error.value = true;
   })
   // 追加
-  if (res.data.records) {
-    res.data.records.forEach((element: AccountBook) => {
+  if (res.data.data.records) {
+    res.data.data.records.forEach((element: AccountBook) => {
       accountListData.value.push(element);
     });
-    total.value = res.data.total;
-    totalAmount.value = res.data.totalAmount
+    total.value = res.data.data.total;
+    // totalMoney.value = res.data.totalMoney
   }
 }
 
@@ -87,10 +95,10 @@ const searchAccoutBooks = () => {
   pageNum.value = 1
   total.value = 0
   count.value = 0
-  totalAmount.value = '0'
-  username.value = inputSearch.value
-  remark.value = inputSearch.value
-  mobile.value = inputSearch.value
+  // totalMoney.value = '0'
+  name.value = inputSearch.value
+  // remark.value = inputSearch.value
+  // mobile.value = inputSearch.value
   accountListData.value = []
   accountlist();
 }
@@ -104,10 +112,14 @@ const onClickTab = ({ title }: any) => showToast(title);
 const date = ref('');
 const show = ref(false);
 const formatDate = (date: any) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+const formatDate2 = (date: any) => `${date.getFullYear()}-${date.getMonth() + 1}` + '-' + date.getDate();
 const onConfirm = (values: any) => {
   const [start, end] = values;
   show.value = false;
   date.value = `${formatDate(start)} - ${formatDate(end)}`;
+  startTime.value = `${formatDate2(start)}`;
+  endTime.value = `${formatDate2(end)}`;
+  searchAccoutBooks();
 };
 // 类型
 const code = ref('');
@@ -117,16 +129,21 @@ const fieldNames = {
   children: 'items',
 };
 const options = [
-  {
+{
+    name: '全部',
+    code: 0
+    // ,
+    // items: [{ name: '杭州市', code: '330100' }],
+  },{
     name: '零售',
-    code: '330000'
+    code: 2
     // ,
     // items: [{ name: '杭州市', code: '330100' }],
   },
   {
     name: '批发',
-    code: '320000',
-    items: [{ name: '土豆', code: '320100' }],
+    code: 1,
+    // items: [{ name: '土豆', code: '320100' }],
   },
 ];
 const show1 = ref(false);
@@ -135,6 +152,12 @@ const fieldValue = ref('类别');
 const onFinish = ({ selectedOptions }: any) => {
   show1.value = false;
   fieldValue.value = selectedOptions.map((option: any) => option.name).join('/');
+  orderType.value = Number(selectedOptions.map((option: any) => option.code).join('/'));
+  // 全部
+  if(orderType.value === 0) {
+    orderType.value = null;
+  }
+  searchAccoutBooks();
 };
 </script>
 
@@ -143,7 +166,10 @@ const onFinish = ({ selectedOptions }: any) => {
     <van-cell class="group-lay-out demo-input-search">
       <!-- 搜索 -->
         <van-search class="main_search" v-model="inputSearch" clearable  placeholder="请输入账单用户姓名、手机号"
-          @keydown.enter="searchAccoutBooks" @search="searchAccoutBooks" @clear="searchAccoutBooks">
+          @keyup.enter="searchAccoutBooks"
+          @search="searchAccoutBooks" 
+          @clear="searchAccoutBooks"
+          >
           <!-- <template #action>
             <div @click="searchAccoutBooks">搜索</div>
           </template> -->
@@ -180,7 +206,7 @@ const onFinish = ({ selectedOptions }: any) => {
     </van-row>
     </div>
     <!-- 放外边防止fixed导致组件底部按钮被导航覆盖 -->
-    <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day/>
+    <van-calendar v-model:show="show" type="range" @confirm="onConfirm" allow-same-day :min-date="new Date('2023-12-01')" :max-date="new Date('2026-12-01')"/>
     <!-- 1vh -->
     <div style="padding-bottom: 3rem"></div>
     <van-cell  class="group-lay-out">

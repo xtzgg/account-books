@@ -1,14 +1,35 @@
 <script setup lang="ts">
 import { showConfirmDialog, showDialog, showToast } from 'vant';
 import { ref, onMounted,watch } from 'vue';
+import { BookTypeService, type BookType } from '@/api/api';
 // import draggable from 'vuedraggable'
 
 // const drag = ref(false);
 
 onMounted(() => {
+    // 初始化列表
+    initBookTypeList();
     // 格式化边部按钮在折叠时无法充满样式问题
     init_btn_style();
-})
+});
+
+const bookTypeList = ref<BookType[]>([]);
+const initBookTypeList = async ()=> {
+    bookTypeList.value = [];
+    const res: any = await BookTypeService.list({});
+    // 初始化赋值
+    if(res.data.data){
+        res.data.data.forEach((re: any) => {
+            const bookType: BookType = JSON.parse(JSON.stringify(re));
+            bookTypeList.value.push(bookType);
+        })
+        // 排序
+        bookTypeList.value.sort((o1,o2)=>{
+            return o1.serialNum - o2.serialNum;
+        })
+    }
+}
+
 const init_btn_style = ()=>{
     setTimeout(() => {
         let btn_first_style = document.getElementsByClassName('btn_first_style_ts') as any;
@@ -57,15 +78,15 @@ const onblur = (i1: number, i: number) => {
 }
 // 添加单元格
 const addCell = (i: number) => {
-    let tmp = bookTypeList.value[i].details;
-    if (!tmp || tmp.length === 0) {
-        enableEdit.value[i] = [];
-    }
-    bookTypeList.value[i].details.push({
-        name: '',
-        code: ''
-    })
-    enableEdit.value[i][bookTypeList.value[i].details.length - 1] = true;
+    // let tmp = bookTypeList.value[i].details;
+    // if (!tmp || tmp.length === 0) {
+    //     enableEdit.value[i] = [];
+    // }
+    // bookTypeList.value[i].details.push({
+    //     name: '',
+    //     code: ''
+    // })
+    // enableEdit.value[i][bookTypeList.value[i].details.length - 1] = true;
 }
 // 删除一级分类
 const tmpInputValue = ref('');
@@ -74,10 +95,10 @@ const beforeCloseFirst = (i: number, op: string) => {
     let msg = '';
     let alertSuccess = '';
     if (op === 'delete') {
-        msg = '是否要删除一级分类<span style="color:red">' + bookTypeList.value[i].name + '</span>'
+        msg = '是否要删除一级分类<span style="color:red">' + bookTypeList.value[i].type + '</span>'
         alertSuccess = '删除';
     } else if (op === 'edit') {
-        msg = '<input type="text"  value="' + bookTypeList.value[i].name + '" id="tmpName"/>'
+        msg = '<input type="text"  value="' + bookTypeList.value[i].type + '" id="tmpName"/>'
         alertSuccess = '编辑';
     } else {
         const s = new Date();
@@ -90,7 +111,7 @@ const beforeCloseFirst = (i: number, op: string) => {
         title: alertSuccess + '一级分类',
         allowHtml: true,
         message: msg
-    }).then(() => {
+    }).then(async () => {
         if (op === 'edit') {
             let elInput = document.getElementById('tmpName') as any;
             if (!elInput || elInput.value === '') {
@@ -102,7 +123,7 @@ const beforeCloseFirst = (i: number, op: string) => {
                 return;
             }
             for (let a = 0; a < bookTypeList.value.length; a++) {
-                if (bookTypeList.value[a].name === elInput.value && bookTypeList.value[i].name != elInput.value) {
+                if (bookTypeList.value[a].type === elInput.value && bookTypeList.value[i].type != elInput.value) {
                     // showToast({
                     //     type:'fail',
                     //     message: '已存在该分类'
@@ -111,7 +132,9 @@ const beforeCloseFirst = (i: number, op: string) => {
                     return;
                 }
             }
-            bookTypeList.value[i].name = elInput.value;
+            // 调用接口
+            bookTypeList.value[i].type = elInput.value;
+            var res: any = await BookTypeService.edit(bookTypeList.value[i]);
         } else if (op === 'add') {
             let elInput = document.getElementById('tmpNameAdd') as any;
             if (!elInput || elInput.value === '') {
@@ -123,7 +146,7 @@ const beforeCloseFirst = (i: number, op: string) => {
                 return;
             }
             for (let a = 0; a < bookTypeList.value.length; a++) {
-                if (bookTypeList.value[a].name === elInput.value) {
+                if (bookTypeList.value[a].type === elInput.value) {
                     // showToast({
                     //     type:'fail',
                     //     message: '已存在该分类'
@@ -132,14 +155,26 @@ const beforeCloseFirst = (i: number, op: string) => {
                     return;
                 }
             }
-            bookTypeList.value.push({
-                name: elInput.value,
-                code: elInput.value,
-                details: []
-            })
+            // 调用接口
+            var res: any = await BookTypeService.add({
+                type: elInput.value,
+                productTypeId: null,
+            });
+            if(res.data.data){
+                bookTypeList.value.push({
+                    productTypeId: res.data.data.productTypeId,
+                    type: res.data.data.type,
+                    serialNum: res.data.data.serialNum
+                })
+            }
         } else {
+            var res: any = await BookTypeService.delete(bookTypeList.value[i]);
             bookTypeList.value.splice(i, 1);
         }
+        // 排序
+        bookTypeList.value.sort((o1,o2)=>{
+            return o1.serialNum - o2.serialNum;
+        })
         showToast({
             type: 'success',
             message: alertSuccess + '成功'
@@ -153,32 +188,32 @@ const beforeCloseFirst = (i: number, op: string) => {
 }
 
 
-const bookTypeList = ref([{
-    name: '批发',
-    code: 'pf',
-    details: [{
-        name: '土豆',
-        code: 'td'
-    }, {
-        name: '西红柿',
-        code: 'xhs'
-    }, {
-        name: '香蕉',
-        code: 'xj'
-    }]
+// const bookTypeList = ref([{
+//     name: '批发',
+//     code: 'pf',
+//     details: [{
+//         name: '土豆',
+//         code: 'td'
+//     }, {
+//         name: '西红柿',
+//         code: 'xhs'
+//     }, {
+//         name: '香蕉',
+//         code: 'xj'
+//     }]
 
-}, {
-    name: '零售',
-    code: 'ls',
-    details: []
-}])
+// }, {
+//     name: '零售',
+//     code: 'ls',
+//     details: []
+// }])
 // 监听数组变化
 watch(bookTypeList.value,(newVal,oldVal)=>{
     init_btn_style();
 })
+
 const beforeClose = (i1: number, i: number) => {
     console.log('删除该条目');
-    bookTypeList.value[i1].details.splice(i, 1);
 }
 const bottomActive = ref(0);
 // const myArray = [{
@@ -213,8 +248,9 @@ const bottomActive = ref(0);
                 <van-collapse v-model="activeNames">
                     <div class="btn_first_style_ts" v-for="(item, index) in bookTypeList">
                         <van-swipe-cell class="van_list_s">
-                            <van-collapse-item :title="item.name" :name="'code' + index">
-                                <div v-for="(sitem, indexm) in item.details">
+                            <van-cell :title="item.type" />
+                            <!-- <van-collapse-item :title="item.type" :name="'code' + index"> -->
+                                <!-- <div v-for="(sitem, indexm) in item.details">
                                     <van-cell v-if="enableEdit[index][indexm] === true" style="padding:0px">
                                         <template #title>
                                             <van-field v-model="sitem.name" placeholder="填写二级分类" label-align="right"
@@ -242,9 +278,9 @@ const bottomActive = ref(0);
                                     <template #value>
                                         <van-icon name="add-o" size="0.6rem" @click="addCell(index)" />
                                     </template>
-                                </van-cell>
-                            </van-collapse-item>
-                            <template #left>
+                                </van-cell> -->
+                            <!-- </van-collapse-item> -->
+                            <template #right>
                                 <van-button square type="primary" text="删除" style="height:100%;background-color:red"
                                     @click="beforeCloseFirst(index, 'delete')" />
                                 <van-button square type="primary" text="编辑" style="height:100%;"

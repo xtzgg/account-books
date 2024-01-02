@@ -5,7 +5,7 @@ import { showConfirmDialog, showNotify,showToast } from 'vant';
 import 'vant/es/dialog/style';
 import { useRouter } from 'vue-router'
 
-import { type AccountBook, BookStatus, AccoutListService } from '@/api/api';
+import { type AccountBook, BookStatus, BookTypeInCome,AccoutListService } from '@/api/api';
 import { ref, defineProps } from 'vue'
 
 // 路由对象
@@ -48,13 +48,13 @@ const editAccountBooks = (i: number) => {
   const accountBook = props.accountList[i];
   router.push({
     path: '/accountedit',
-    query: { 'id': accountBook.id, 'op': 'edit' } // JSON.parse(JSON.stringify(accountUser))
+    query: { 'incomeOrderId': accountBook.incomeOrderId, 'op': 'edit' } // JSON.parse(JSON.stringify(accountUser))
   })
 }
 const deleteAccountBook = async (i: number) => {
   const accountBook = props.accountList[i];
   const res: any = await AccoutListService.delete({
-    'id': accountBook.id
+    'incomeOrderId': accountBook.incomeOrderId
   })
   if (res.status == 200 && res.data.code == 200) {
     showNotify({
@@ -81,22 +81,27 @@ const deleteAccountBook = async (i: number) => {
 }
 
 const container = ref();
+
+const accountBookTypeColumns = [
+    { text: '批发', value: 1 },
+    { text: '零售', value: 2 }
+];
 </script>
 
 <template>
-  <van-cell v-for="(item, index) in accountList" style="padding: 0;" :to="'/accountdetail?id='+ item.id">
+  <van-cell v-for="(item, index) in accountList" style="padding: 0;" :to="'/accountdetail?incomeOrderId='+ item.incomeOrderId">
     <van-swipe-cell class="van_list_s">
       <div class="item" ref="container" >
         <!-- 粘性状态标识 -->
         <div style="position: absolute;right: 0.6rem;">
-          <div :class="['triangle2',item.status === 1 ? 'triangle2_error':'']" style="color:black">{{ item.status == null ? '' :  
+          <div :class="['triangle2',item.status === 2 ? 'triangle2_error':'']" style="color:black">{{ item.status == null ? '' :  
             BookStatus.get(item.status)}}</div>
-          <div :class="['triangle',item.status === 1 ? 'triangle_error':'']"></div>
+          <div :class="['triangle',item.status === 2 ? 'triangle_error':'']"></div>
         </div>
         <div style="padding:0.5rem">
             <van-row style="text-align: left">
               <van-col :span="width_left" class="col_left">
-                类型：<span class="content_s">{{ item.bookTypeDesc }}</span>
+                类型：<span class="content_s">{{ item.typeDesc}}</span>
               </van-col>
               <van-col v-if="item.userId" :span="width_right" class="col_right">
                 客户：<span class="content_s">{{ item.username }}</span>
@@ -104,15 +109,15 @@ const container = ref();
             </van-row>
             <van-row style="text-align: left">
               <van-col :span="width_left" class="col_left">
-                金额：<span class="content_s">{{ item.totalAmount }}</span>
+                金额：<span class="content_s">{{ item.totalMoney }} 元</span>
               </van-col>
-              <van-col v-if="item.status !== 2" :span="width_right" class="col_right">
-                欠款：<span class="content_s">{{ Number(item.totalAmount) - Number(item.payAmount) }}</span>
+              <van-col v-if="item.status !== 1" :span="width_right" class="col_right">
+                欠款：<span class="content_s">{{ item.unpaidMoney }} 元</span>
               </van-col>
             </van-row>
             <van-row style="text-align: left">
               <van-col :span="width_left" class="col_left">
-                时间：<span class="content_s">{{ item.createDate }}</span>
+                时间：<span class="content_s">{{ item.day }}</span>
               </van-col>
             </van-row>
           </div>

@@ -4,7 +4,7 @@
 import 'vant/es/dialog/style';
 import { useRouter, useRoute } from 'vue-router'
 
-import { AccountUserService, type AccountUser, EnableStatus } from '@/api/api';
+import { UserManageService, type AccountUser, EnableStatus } from '@/api/api';
 import { ref, computed, reactive, onMounted } from 'vue'
 
 // 路由对象
@@ -16,35 +16,34 @@ const width_right = ref(16);
 
 // 初始化详情
 onMounted(() => {
-    console.log(route.query.userId);
-    initAccountUser(Number(route.query.userId));
+    console.log(route.query.userManagerId);
+    initAccountUser(Number(route.query.userManagerId));
 })
 
 // 初始化
 const accountUser: AccountUser = reactive({
-    userId: null,
-    username: '',
-    status: null,
+    userManagerId: null,
+    name: '',
+    enabled: null,
     type: null,
-    mobile: '',
-    area: '',
-    areaCode: '',
-    areaDetail: '',
-    createDate: '',
-    updateDate: ''
+    phone: '',
+    address: '',
+    createTime: '',
+    updateDate: '',
+    remark:''
 })
 
 const statusDesc = computed(() => {
-    console.log(accountUser.status);
-    let tmp = accountUser.status == null ? '' : EnableStatus.get(accountUser.status);
+    console.log(accountUser.enabled);
+    let tmp = accountUser.enabled == null ? '' : EnableStatus.get(accountUser.enabled);
     console.log(tmp);
     return tmp;
 })
 // 初始化账本信息
-const initAccountUser = async (userId: number) => {
-    const res: any = await AccountUserService.detail({ 'userId': userId });
-    if (res.data) {
-        Object.assign(accountUser, res.data);
+const initAccountUser = async (userManagerId: number) => {
+    const res: any = await UserManageService.detail({ 'userManagerId': userManagerId });
+    if (res.data.data) {
+        Object.assign(accountUser, res.data.data);
         // TODO 参数转化
     }
 }
@@ -59,7 +58,7 @@ const clickRouteEdit = () => {
     router.push({
         path: '/accountuseredit',
         query: {
-            'userId': accountUser.userId,
+            'userManagerId': accountUser.userManagerId,
             'op': 'edit',
             'role': route.query.role
         }
@@ -81,10 +80,10 @@ const clickRouteEdit = () => {
                 <!-- 粘性状态标识 -->
                 <van-sticky :container="container" :offset-right="20">
                     <div style="position: absolute;right: 0;">
-                        <div :class="['triangle2', accountUser.status === 0 ? 'triangle2_error' : '']"
+                        <div :class="['triangle2', accountUser.enabled === 0 ? 'triangle2_error' : '']"
                             style="color: black;">
                             {{ statusDesc }}</div>
-                        <div :class="['triangle', accountUser.status === 0 ? 'triangle_error' : '']"></div>
+                        <div :class="['triangle', accountUser.enabled === 0 ? 'triangle_error' : '']"></div>
                     </div>
                 </van-sticky>
                 <van-row>
@@ -93,7 +92,32 @@ const clickRouteEdit = () => {
                         姓名
                     </van-col>
                     <van-col :span="width_right" class="col_right">
-                        {{ accountUser.username }}
+                        {{ accountUser.name }}
+                    </van-col>
+                </van-row>
+                <van-row>
+                    <van-col :span="width_left" class="col_left">
+                        电话
+                    </van-col>
+                    <van-col :span="width_right" class="col_right">
+                        {{ accountUser.phone }}
+                    </van-col>
+                </van-row>
+                <!-- <van-row>
+                    <van-col :span="width_left" class="col_left">
+                        地址
+                    </van-col>
+                    <van-col :span="width_right" class="col_right">
+                        {{ accountUser.area == null ? '' : accountUser.area }}
+                    </van-col>
+                </van-row> -->
+                <van-row>
+                    <van-col :span="width_left" class="col_left">
+                        详细地址
+                    </van-col>
+                    <van-col :span="width_right" class="col_right">
+                        <van-text-ellipsis :content="accountUser.address == null ? '' : accountUser.address"
+                            expand-text="展开" collapse-text="收起" />
                     </van-col>
                 </van-row>
                 <van-row>
@@ -102,32 +126,7 @@ const clickRouteEdit = () => {
                         日期
                     </van-col>
                     <van-col :span="width_right" class="col_right">
-                        {{ accountUser.createDate }}
-                    </van-col>
-                </van-row>
-                <van-row>
-                    <van-col :span="width_left" class="col_left">
-                        电话
-                    </van-col>
-                    <van-col :span="width_right" class="col_right">
-                        {{ accountUser.mobile }}
-                    </van-col>
-                </van-row>
-                <van-row>
-                    <van-col :span="width_left" class="col_left">
-                        地址
-                    </van-col>
-                    <van-col :span="width_right" class="col_right">
-                        {{ accountUser.area == null ? '' : accountUser.area }}
-                    </van-col>
-                </van-row>
-                <van-row>
-                    <van-col :span="width_left" class="col_left">
-                        详细地址
-                    </van-col>
-                    <van-col :span="width_right" class="col_right">
-                        <van-text-ellipsis :content="accountUser.areaDetail == null ? '' : accountUser.areaDetail"
-                            expand-text="展开" collapse-text="收起" />
+                        {{ accountUser.createTime }}
                     </van-col>
                 </van-row>
             </van-cell>

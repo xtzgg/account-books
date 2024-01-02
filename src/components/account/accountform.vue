@@ -7,7 +7,7 @@ import { areaList } from '../../common/area';
 import { showConfirmDialog, showNotify, showToast } from 'vant';
 import type { PickerInstance } from 'vant';
 
-import { AccountUserService, type AccountUser, AccoutListService, type AccountBook, type AccountEditKey } from '@/api/api'
+import { UserManageService, type AccountUser, IncomeOrderService, type AccountBook, type AccountEditKey,BookTypeInCome, BookTypeService, type BookType } from '@/api/api'
 
 import { useRouter, useRoute } from 'vue-router'
 
@@ -29,20 +29,35 @@ const props = defineProps<{
 onMounted(() => {
     // 异步获取人员列表
     searchAccountUserListFuc('')
+    // 初始化商品类型列表
+    initBookTypeColumns();
     // 编辑
     if (props.accountEditKey.op === 'edit') {
-        initAccountBooks(Number(props.accountEditKey.id));
+        initAccountBooks(Number(props.accountEditKey.incomeOrderId));
     }
 })
+
+const accountVegetableTypeColumns: any = ref([]);
+const initBookTypeColumns = async ()=>{
+    const res: any = await BookTypeService.list({});
+    if(res.data.data){
+        res.data.data.forEach((re: any)=> {
+            accountVegetableTypeColumns.value.push({
+                'text': re.type,
+                'value': re.productTypeId
+            })
+        })
+    }
+}
 // watch(props.accountEditKey,(newVal,oldVal) => {
 //     initAccountBooks(Number(props.accountEditKey.id));
 // })
 
 // 初始化账本编辑信息
-const initAccountBooks = async (id: number) => {
-    const res: any = await AccoutListService.detail({ 'id': id });
-    if (res.data) {
-        Object.assign(accounForm, res.data);
+const initAccountBooks = async (incomeOrderId: number) => {
+    const res: any = await IncomeOrderService.detail({ 'incomeOrderId': incomeOrderId });
+    if (res.data.data) {
+        Object.assign(accounForm, res.data.data);
         // accounForm.details = [{
         //     name: '',
         //     amount: '',
@@ -84,24 +99,26 @@ const userListColumns = ref<PickerItem[]>([])
 const userMap = ref(new Map<number, AccountUser>());
 // 表单信息
 const accounForm: AccountBook = reactive({
-    id: null,
+    incomeOrderId: null,
     userId: null,
     username: '',
     status: null,
-    accountAmount: '',
-    totalAmount: '',
-    payAmount: '',
+    totalMoney: '',
+    paidMoney: '',
+    unpaidMoney: '',
+    address:'',
+    day:'',
+    type: null,
+    typeDesc:"",
     bookType: null,
     bookTypeDesc: '',
     mobile: '',
-    area: '',
-    areaCode: '',
-    areaDetail: '',
     remark: '',
     createDate: '',
     details: [{
-        name: '',
-        amount: '',
+        productTypeId: null,
+        productTypeName: '',
+        money: '',
         weight: ''
     }]
 })
@@ -122,24 +139,22 @@ const onConfirmUser = ({ selectedOptions }: any) => {
 };
 const assignAndInitComponent = (accountUser: AccountUser) => {
     // 赋值
-    accounForm.userId = accountUser.userId
-    accounForm.username = accountUser.username
-    accounForm.area = accountUser.area
-    accounForm.areaDetail = accountUser.areaDetail
-    accounForm.mobile = accountUser.mobile
+    accounForm.userId = accountUser.userManagerId
+    accounForm.username = accountUser.name
+    accounForm.mobile = accountUser.phone
     // 组件绑定input回显
     formShowFuc();
     // 组件回显 TODO 需要地区码
-    if (accountUser.area) {
+    // if (accountUser.area) {
 
-    }
+    // }
 }
 // 回显表单值
 const formShowFuc = () => {
     userResult.value = accounForm.username
-    const status = getStatus(accounForm.bookType);
-    bookTypeResult.value = status == null ? '' : status.text;
-    areaResult.value = accounForm.area
+    const status = getStatus(accounForm.type);
+    bookTypeResult.value = status == null ? '' : status;
+    // areaResult.value = accounForm.area
     console.log(accounForm)
 }
 // 组件回显
@@ -155,8 +170,8 @@ const onConfirmArea = ({ selectedOptions }: any) => {
     areaResult.value = selectedOptions.map((item: any) => item.text).join('/');
     showArea.value = false;
     // 表单：地区赋值
-    accounForm.area = areaResult.value
-    accounForm.areaCode = selectedOptions.map((item: any) => item.value).join('/');
+    // accounForm.area = areaResult.value
+    // accounForm.areaCode = selectedOptions.map((item: any) => item.value).join('/');
 };
 
 const searchAccountUserListFuc = (value: string) => {
@@ -169,22 +184,21 @@ const searchAccountUserListFuc = (value: string) => {
 }
 // 获取人员信息数据
 const accountUserListFuc = async (value: string) => {
-    const res: any = await AccountUserService.list({
+    const res: any = await UserManageService.list({
         "pageNum": 1,
         "pageSize": 1000,
-        "username": value,
-        "remark": '',
-        "mobile": ''
+        "keyword": value,
+        "type":1
     })
     // 追加
-    if (res.data.records) {
-        console.log(res.data.records)
+    if (res.data.data.records) {
+        console.log(res.data.data.records)
         userListColumns.value = [];
         userMap.value.clear;
-        res.data.records.forEach((element: AccountUser) => {
-            if (element.userId != null) {
-                userMap.value.set(element.userId, element);
-                userListColumns.value.push({ value: element.userId, text: `${element.username}` })
+        res.data.data.records.forEach((element: AccountUser) => {
+            if (element.userManagerId != null) {
+                userMap.value.set(element.userManagerId, element);
+                userListColumns.value.push({ value: element.userManagerId, text: `${element.name}` })
             }
         });
     }
@@ -192,7 +206,7 @@ const accountUserListFuc = async (value: string) => {
 // 根据code结算状态获取
 const getStatus = (value: number | null) => {
     if (value != null) {
-        return accountBookTypeColumns[value - 1]
+        return BookTypeInCome.get(value);
     }
     return null;
 }
@@ -201,11 +215,11 @@ const accountBookTypeColumns = [
     { text: '批发', value: 1 },
     { text: '零售', value: 2 }
 ];
-const accountVegetableTypeColumns = [
-    { text: '土豆', value: 1 },
-    { text: '西红柿', value: 2 },
-    { text: '香蕉', value: 3 }
-];
+// const accountVegetableTypeColumns = [
+//     { text: '土豆', value: 1 },
+//     { text: '西红柿', value: 2 },
+//     { text: '香蕉', value: 3 }
+// ];
 
 // 账单类型选择
 const onConfirmBookType = ({ selectedOptions }: any) => {
@@ -213,7 +227,7 @@ const onConfirmBookType = ({ selectedOptions }: any) => {
     bookTypeResult.value = selectedOptions[0]?.text;
     // 通过index获取值
     // 赋值表单
-    accounForm.bookType = selectedOptions[0]?.value;
+    accounForm.type = selectedOptions[0]?.value;
     // 隐藏
     showBookTypePicker.value = false;
 };
@@ -232,18 +246,19 @@ const onConfirmVegetableType = (i: number) => {
     let options1: any = pickerRefs.get(i)?.getSelectedOptions()[0];
     if (options1?.text && options1?.text != undefined) {
         vegetableResult.value = options1?.text;
-        accounForm.details[i].name = options1?.text;
+        accounForm.details[i].productTypeId = options1?.value;
+        accounForm.details[i].productTypeName = options1?.text;
     }
     // 隐藏
     showVegetableTypePicker.value[i] = false;
 };
 // 总和计算
-const totalAmount = computed(() => {
+const totalMoney = computed(() => {
     // 正常情况下返回需要的数据
     try {
         let tmpAmount: number = 0;
         accounForm.details.forEach(d => {
-            tmpAmount = tmpAmount + Number(d.amount == '' ? 0 : d.amount)
+            tmpAmount = tmpAmount + Number(d.money == '' ? 0 : d.money)
         });
         return tmpAmount;
     } catch (e) {
@@ -267,13 +282,15 @@ const onSubmit = (values: any) => {
 const accountConfirmSubmit = async () => {
     let tmpAmount = 0;
     accounForm.details.forEach(d => {
-        tmpAmount = tmpAmount + Number(d.amount)
+        tmpAmount = tmpAmount + Number(d.money)
     });
-    if (Number(accounForm.payAmount) === tmpAmount) {
+    if (Number(accounForm.paidMoney) === tmpAmount) {
         accountSubmit();
         return;
     }
-    const unPayAmount = tmpAmount - Number(accounForm.payAmount);
+    const unpaidMoney = tmpAmount - Number(accounForm.paidMoney);
+    accounForm.unpaidMoney = (unpaidMoney ? unpaidMoney + '' : '');
+    accounForm.totalMoney = tmpAmount + '';
     showConfirmDialog({
         title: '确认信息',
         allowHtml: true,
@@ -281,8 +298,8 @@ const accountConfirmSubmit = async () => {
             '<hr/>'
             + '<div>'
             + '<div><div style="display:inline-flex;width: 100%;"><span style="text-align: right;width: 50%;">总金额：</span><span style="text-align: left;width: 50%;">' + tmpAmount + '元</span></div></div>'
-            + '<div><div style="display:inline-flex;width: 100%;"><span style="text-align: right;width: 50%;">已付金额：</span><span style="text-align: left;width: 50%;">' + accounForm.payAmount + '元</div></div>'
-            + '<div><div style="display:inline-flex;width: 100%; color:red"><span style="text-align: right;width: 50%;">欠款金额：</span><span style="text-align: left;width: 50%;">' + unPayAmount + '元</div></div>'
+            + '<div><div style="display:inline-flex;width: 100%;"><span style="text-align: right;width: 50%;">已付金额：</span><span style="text-align: left;width: 50%;">' + accounForm.paidMoney + '元</div></div>'
+            + '<div><div style="display:inline-flex;width: 100%; color:red"><span style="text-align: right;width: 50%;">欠款金额：</span><span style="text-align: left;width: 50%;">' + unpaidMoney + '元</div></div>'
             + '<div><div style="display:inline-flex;width: 100%; color:red"><span style="text-align: right;width: 50%;">状态：</span><span style="text-align: left;width: 50%;">' + '未结清' + '</div></div>'
             + '</div>'
     }).then(() => {
@@ -297,26 +314,22 @@ const accountConfirmSubmit = async () => {
 const accountSubmit = async () => {
     console.log(accounForm);
     const params = {
-        "id": accounForm.id,
+        "incomeOrderId": accounForm.incomeOrderId,
         "userId": accounForm.userId,
-        "username": accounForm.username,
-        "mobile": accounForm.mobile,
-        "area": accounForm.area,
-        "areaCode": accounForm.areaCode,
-        "areaDetail": accounForm.areaDetail,
-        "totalAmount": accounForm.totalAmount,
-        "payAmount": accounForm.payAmount,
-        "status": accounForm.status,
-        "bookType": accounForm.bookType,
+        "totalMoney": accounForm.totalMoney,
+        "paidMoney": accounForm.paidMoney,
+        "unpaidMoney": accounForm.unpaidMoney,
+        "day":accounForm.day,
+        "type": accounForm.type,
         "remark": accounForm.remark,
         "details": accounForm.details
     }
     let res: any;
-    if (props.accountEditKey.id && props.accountEditKey.id !== null) {
-        params.id = Number(props.accountEditKey.id);
-        res = await AccoutListService.edit(params)
+    if (props.accountEditKey.incomeOrderId && props.accountEditKey.incomeOrderId !== null) {
+        params.incomeOrderId = Number(props.accountEditKey.incomeOrderId);
+        res = await IncomeOrderService.edit(params)
     } else {
-        res = await AccoutListService.add(params)
+        res = await IncomeOrderService.add(params)
     }
     // 编辑成功或失败
     // 关闭遮罩层
@@ -366,11 +379,12 @@ const addUser = () => {
 }
 // 新增样式，后续修改
 const active = ref(0);
-const unpayAmount = ref(0);
+const unpaidMoney = ref(0);
 const addvegetables = () => {
     accounForm.details.push({
-        name: '',
-        amount: '',
+        productTypeId : null,
+        productTypeName : '',
+        money: '',
         weight: ''
     })
     setTimeout(() => {
@@ -396,10 +410,10 @@ const subvegetables = (i: number) => {
 const validatorMessage = () => {
     let tmpAmount = 0;
     accounForm.details.forEach(d => {
-        tmpAmount += Number(d.amount);
+        tmpAmount += Number(d.money);
     })
     // 未结清
-    if (Number(accounForm.payAmount) < tmpAmount && !accounForm.userId) {
+    if (Number(accounForm.paidMoney) < tmpAmount && !accounForm.userId) {
         return "存在欠款，人员必选";
     }
     return '';
@@ -410,16 +424,16 @@ const validatorMessage = () => {
         <van-cell title="基础信息" style="background:#F7F6F6;" />
         <van-cell-group inset>
             <!-- 类型 -->
-            <van-field v-model="bookTypeResult" required is-link readonly name="bookType" label="类型" placeholder="点击选择账单类型"
+            <van-field v-model="bookTypeResult" required is-link readonly name="type" label="类型" placeholder="点击选择账单类型"
                 @click="showBookTypePicker = true" :rules="[{ required: true, message: '请选择账单类型' }]" />
             <van-popup v-model:show="showBookTypePicker" position="bottom">
                 <van-picker title="账单类型" :columns="accountBookTypeColumns" @confirm="onConfirmBookType"
                     @cancel="showBookTypePicker = false" :loading="loading" />
             </van-popup>
             <!-- 结算金额 -->
-            <van-field v-model="accounForm.payAmount" type="number" required name="accountAmount" label="已付金额(元)"
-                placeholder="请输入结算金额" :rules="[{ required: true, message: '请输入已付金额' }]" />
-            <div v-if="accounForm.bookType != 2">
+            <van-field v-model="accounForm.paidMoney" type="number" required name="paidMoney" label="已付金额(元)"
+                placeholder="请输入已付金额" :rules="[{ required: true, message: '请输入已付金额' }]" />
+            <div v-if="accounForm.type != 2">
                 <!-- 用户名 -->
                 <van-field v-model="userResult" is-link readonly name="username" label="姓名" placeholder="点击选择人员"
                     @click="showUserPickerClick" validate-trigger="onSubmit" :rules="[{ validator: validatorMessage }]" />
@@ -439,30 +453,30 @@ const validatorMessage = () => {
                     <van-picker title="结算状态" :columns="accountBookStatusColumns" @confirm="onConfirmBookType"
                         @cancel="showBookTypePicker = false" :loading="loading" />
                 </van-popup> -->
-                <!-- <van-field v-model="unpayAmount" name="accountAmount" label="未付金额(元)" readonly />
-                <van-field v-model="accounForm.totalAmount" name="accountAmount" label="总金额(元)" readonly /> -->
+                <!-- <van-field v-model="unpaidMoney" name="accountAmount" label="未付金额(元)" readonly />
+                <van-field v-model="accounForm.totalMoney" name="accountAmount" label="总金额(元)" readonly /> -->
                 <!-- 截至日期 -->
                 <!-- <van-field v-model="endDateResult" is-link readonly name="calendar" label="截至日期" placeholder="点击选择日期"
                     @click="endDateshowCalendar = true" />
                 <van-calendar v-model:show="endDateshowCalendar" :min-date="minDate" :max-date="maxDate"
                     :defaultDate="defaultDate" @confirm="onConfirmEndDate" /> -->
 
-                <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" />
+                <!-- <van-field v-model="accounForm.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" /> -->
                 <!-- 联系地址 -->
-                <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
+                <!-- <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
                     @click="showArea = true" />
                 <van-popup v-model:show="showArea" position="bottom">
                     <van-area :area-list="areaList" @confirm="onConfirmArea" @cancel="showArea = false" />
-                </van-popup>
-                <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
+                </van-popup> -->
+                <!-- <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
                     v-model="accounForm.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
-                
+                 -->
                 <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50" v-model="accounForm.remark"
                     name="remark" label="备注" placeholder="请输入备注信息" />
             </div>
         </van-cell-group>
         <van-cell title="明细信息" style="background:#F7F6F6;">
-            <span style="color:red">{{ totalAmount }}元</span>
+            <span style="color:red">{{ totalMoney }}元</span>
         </van-cell>
         <van-cell-group inset>
             <div v-for="(detail, index) in accounForm.details" :key="index" style="background-color:aliceblue;">
@@ -472,7 +486,7 @@ const validatorMessage = () => {
                     </template>
                     <van-button icon="minus" size="mini" type="primary" @click="subvegetables(index)" />
                 </van-cell>
-                <van-field v-model="detail.name" required is-link readonly label="品类" placeholder="点击选择品类"
+                <van-field v-model="detail.productTypeName" required is-link readonly label="品类" placeholder="点击选择品类"
                     @click="showVegetableTypePicker[index] = true" :rules="[{ required: true, message: '请选择品类' }]" />
                 <van-popup v-model:show="showVegetableTypePicker[index]" position="bottom">
                     <van-picker title="品类" :ref="(el) => createPickerRef(el, index)" :columns="accountVegetableTypeColumns"
@@ -480,8 +494,7 @@ const validatorMessage = () => {
                         :loading="loading">
                     </van-picker>
                 </van-popup>
-                <!-- :formatter="amountFormatter" -->
-                <van-field v-model="detail.amount" type="number" required name="accountAmount" label="金额(元)"
+                <van-field v-model="detail.money" type="number" required name="money" label="金额(元)"
                     placeholder="请输入结算金额" :rules="[{ required: true, message: '请输入结算金额' }]" />
                 <van-field v-model="detail.weight" type="number" name="weight" label="重量(公斤)" placeholder="请输入重量信息" />
             </div>

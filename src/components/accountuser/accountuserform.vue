@@ -6,7 +6,7 @@ import { ref, onMounted, watch } from 'vue';
 import { areaList } from '../../common/area';
 import { showNotify, showToast } from 'vant';
 
-import { AccountUserService, type AccountUser, type AccountEditKey, EnableStatus } from '@/api/api'
+import { UserManageService, type AccountUser, type AccountEditKey, EnableStatus } from '@/api/api'
 
 import { useRouter } from 'vue-router'
 
@@ -27,15 +27,15 @@ const props = defineProps<{
 onMounted(() => {
     // 编辑
     if (props.accountEditKey.op === 'edit') {
-        initAccountUser(Number(props.accountEditKey.userId));
+        initAccountUser(Number(props.accountEditKey.userManagerId));
     }
 })
 
 // 初始化人员信息
-const initAccountUser = async (userId: number) => {
-    const res: any = await AccountUserService.detail({ 'userId': userId });
-    if (res.data) {
-        Object.assign(accountUser, res.data);
+const initAccountUser = async (userManagerId: number) => {
+    const res: any = await UserManageService.detail({ 'userManagerId': userManagerId });
+    if (res.data.data) {
+        Object.assign(accountUser, res.data.data);
         // 组件绑定input回显
         formShowFuc();
     }
@@ -50,22 +50,21 @@ const statusResult = ref('');
 const areaResult = ref('');
 // 表单信息
 const accountUser: AccountUser = reactive({
-    userId: null,
-    username: '',
-    status: null,
+    userManagerId: null,
+    name: '',
+    enabled: null,
     type: null,
-    mobile: '',
-    area: '',
-    areaCode: '',
-    areaDetail: '',
-    createDate: ''
+    phone: '',
+    address: '',
+    remark:'',
+    createTime: ''
 })
 
 // 回显表单值
 const formShowFuc = () => {
-    const statusDesc = getStatus(accountUser.status);
+    const statusDesc = getStatus(accountUser.enabled);
     statusResult.value = statusDesc == null ? '' : statusDesc;
-    areaResult.value = accountUser.area
+    // areaResult.value = accountUser.area
     console.log(accountUser)
 }
 
@@ -78,19 +77,19 @@ const accountUserStatusColumns = [
 // 确认
 const onConfirmStatus = ({ selectedOptions }: any) => {
     statusResult.value = selectedOptions[0].text;
-    accountUser.status = selectedOptions[0].value;
+    accountUser.enabled = selectedOptions[0].value;
     showStatusPicker.value = false;
 }
 
 
 // 地区选择
-const onConfirmArea = ({ selectedOptions }: any) => {
-    areaResult.value = selectedOptions.map((item: any) => item.text).join('/');
-    showArea.value = false;
-    // 表单：地区赋值
-    accountUser.area = areaResult.value
-    accountUser.areaCode = selectedOptions.map((item: any) => item.value).join('/');
-};
+// const onConfirmArea = ({ selectedOptions }: any) => {
+//     areaResult.value = selectedOptions.map((item: any) => item.text).join('/');
+//     showArea.value = false;
+//     // 表单：地区赋值
+//     accountUser.area = areaResult.value
+//     accountUser.areaCode = selectedOptions.map((item: any) => item.value).join('/');
+// };
 
 // 根据code结算状态获取
 const getStatus = (value: number | null) => {
@@ -110,24 +109,33 @@ const onSubmit = (values: any) => {
     // 组装数据
     accountSubmit();
 };
+const  getType = ()=>{
+  if(props.accountEditKey.role === 'customer'){
+      return 1; // 客户
+  } else if(props.accountEditKey.role === 'cargo'){
+      return 2; // 供货人
+  } else {
+      return 3; // 工人
+  }
+}
 
 const accountSubmit = async () => {
     console.log(accountUser);
     const params = {
-        "userId": accountUser.userId,
-        "username": accountUser.username,
-        "mobile": accountUser.mobile,
-        "area": accountUser.area,
-        "areaCode": accountUser.areaCode,
-        "areaDetail": accountUser.areaDetail,
-        "status": accountUser.status,
+        "userManagerId": accountUser.userManagerId,
+        "name": accountUser.name,
+        "phone": accountUser.phone,
+        "address": accountUser.address,
+        "enabled": accountUser.enabled,
+        "type": getType(),
+        "remark": accountUser.remark
     }
     let res: any;
-    if (props.accountEditKey.userId && props.accountEditKey.userId !== null) {
-        params.userId = Number(props.accountEditKey.userId);
-        res = await AccountUserService.edit(params)
+    if (props.accountEditKey.userManagerId && props.accountEditKey.userManagerId !== null) {
+        params.userManagerId = Number(props.accountEditKey.userManagerId);
+        res = await UserManageService.edit(params)
     } else {
-        res = await AccountUserService.add(params)
+        res = await UserManageService.add(params)
     }
     // 添加或编辑成功/失败
     // 关闭遮罩层
@@ -157,7 +165,7 @@ const accountSubmit = async () => {
         <van-cell title="基础信息" style="background:#F7F6F6;" />
         <van-cell-group inset>
             <!-- 用户名 -->
-            <van-field v-model="accountUser.username" name="username" label="姓名" placeholder="请输入姓名" />
+            <van-field v-model="accountUser.name" name="username" label="姓名" placeholder="请输入姓名" />
             <!-- 状态 -->
             <van-field v-model="statusResult" is-link readonly name="status" label="用户状态" placeholder="点击选择用户状态"
                 @click="showStatusPicker = true" :rules="[{ required: true, message: '请选择用户状态' }]" />
@@ -165,15 +173,15 @@ const accountSubmit = async () => {
                 <van-picker title="用户状态" :columns="accountUserStatusColumns" @confirm="onConfirmStatus"
                     @cancel="showStatusPicker = false" :loading="false" />
             </van-popup>
-            <van-field v-model="accountUser.mobile" name="mobile" label="联系电话" placeholder="请输入联系电话" />
+            <van-field v-model="accountUser.phone" name="mobile" label="联系电话" placeholder="请输入联系电话" />
             <!-- 联系地址 -->
-            <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
+            <!-- <van-field v-model="areaResult" is-link readonly name="area" label="地区选择" placeholder="点击选择省市区"
                 @click="showArea = true" />
             <van-popup v-model:show="showArea" position="bottom">
                 <van-area :area-list="areaList" @confirm="onConfirmArea" @cancel="showArea = false" />
-            </van-popup>
+            </van-popup> -->
             <van-field type="textarea" :autosize="textAreaSize" show-word-limit maxlength="50"
-                v-model="accountUser.areaDetail" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
+                v-model="accountUser.address" name="areaDetail" label="详细地址" placeholder="请输入详细地址" />
         </van-cell-group>
         <div style="margin: 16px;">
             <van-button round block type="primary" native-type="submit">

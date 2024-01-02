@@ -19,7 +19,7 @@ onMounted(() => {
 // const onClickTab = ({ title }: any) => showToast(title);
 
 const AccountEditKey = ref<AccountEditKey>({
-    userId: Number(route.query.userId),
+    userManagerId: Number(route.query.userManagerId),
     role: route.query.role + '',
     op: route.query.op + ''
 })
@@ -45,6 +45,6 @@ const onClickLeft = () => history.back();
 </template>
 
 <style scoped lang="scss">
-
+    
 </style>
 

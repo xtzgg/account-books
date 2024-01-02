@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import accountListItem from './accountListItem.vue'
 import { computed, ref, defineProps, toRefs, onMounted, reactive } from 'vue'
-import { type AccountBook, AccoutListService, type AccountUser } from '@/api/api'
+import { type AccountBook, IncomeOrderService, type AccountUser } from '@/api/api'
 import { showToast, type DatePickerColumnType } from 'vant'
 import 'vant/es/dialog/style';
 
@@ -12,11 +12,17 @@ const props = defineProps<{
 // 初始化加载
 onMounted(() => {
   inputSearch.value = ''
-  accountlist();
-  // 日历显示初始化
+  // 日历显示初始化、查询条件
   const nowDate = new Date();
+  const y = nowDate.getFullYear(); 
+  const m = nowDate.getMonth();
+  const firstDay = new Date(y, m, 1);
+  const lastDay = new Date(y, m + 1, 0);
   currentDate.value = [`${nowDate.getFullYear()}`, `${nowDate.getMonth() + 1}`];
   currentDateResult.value = formatDate(nowDate);
+  startTime.value = `${nowDate.getFullYear()}-${nowDate.getMonth() + 1}-01`;
+  endTime.value = formatDate2(nowDate);
+  searchAccoutBooks();
 })
 
 // 账单搜索框
@@ -28,6 +34,9 @@ const totalAmount = ref('')
 const mobile = ref('')
 const username = ref('')
 const remark = ref('')
+const keyword = ref('');
+const startTime = ref('');
+const endTime = ref('')
 // 滚动翻页
 const count = ref(8)
 const loading = ref(false)
@@ -57,7 +66,7 @@ const load = () => {
 const onRefresh = () => {
   // 清空列表数据
   count.value = total.value = 0
-  totalAmount.value = ''
+  // totalAmount.value = ''
   pageNum.value = 1
   // 重新加载数据
   // 将 loading 设置为 true，表示处于加载状态
@@ -68,23 +77,24 @@ const onRefresh = () => {
 // 获取账单列表
 const accountListData = ref<AccountBook[]>([]);
 const accountlist = async () => {
-  const res: any = await AccoutListService.list({
+  const res: any = await IncomeOrderService.list({
     "pageNum": pageNum.value,
     "pageSize": pageSize.value,
-    "username": username.value,
-    "createDate": createDate.value,
-    "mobile": mobile.value,
-    "status": Number(props.bookStatus)
+    "name": keyword.value,
+    "startTime": startTime.value,
+    "endTime": endTime.value,
+    "status": 2,
+    "orderType": null
   }).catch(() => {
     error.value = true;
   })
   // 追加
-  if (res.data.records) {
-    res.data.records.forEach((element: AccountBook) => {
+  if (res.data.data.records) {
+    res.data.data.records.forEach((element: AccountBook) => {
       accountListData.value.push(element);
     });
-    total.value = res.data.total;
-    totalAmount.value = res.data.totalAmount
+    total.value = res.data.data.total;
+    // totalAmount.value = res.data.totalAmount
   }
 }
 
@@ -93,10 +103,10 @@ const searchAccoutBooks = () => {
   pageNum.value = 1
   total.value = 0
   count.value = 0
-  totalAmount.value = '0'
-  username.value = inputSearch.value
-  remark.value = inputSearch.value
-  mobile.value = inputSearch.value
+  // totalAmount.value = '0'
+  keyword.value = inputSearch.value
+  // remark.value = inputSearch.value
+  // mobile.value = inputSearch.value
   accountListData.value = []
   accountlist();
 }
@@ -108,6 +118,13 @@ const onClickTab = ({ title }: any) => showToast(title);
 
 // 日期
 // 范围
+const formatDate2 = (date: any) => {
+   return `${date.getFullYear()}-${date.getMonth() + 1}` + '-' + getMonthDay(date.getFullYear(),date.getMonth() + 1);  
+};
+const getMonthDay = (year: number, month: number) => {
+   let days = new Date(year, month, 0).getDate()
+   return days
+}
 const minDate = new Date(2020, 1, 1);
 const maxDate = new Date(2030, 11, 31);
 const showDatePicker = ref(false);
@@ -127,9 +144,12 @@ const formatter = (type: string, option: any) => {
 const onConfirm = ({selectedOptions}: any) => {
   console.log(selectedOptions);
   currentDateResult.value = selectedOptions[0].text + selectedOptions[1].text;
-  createDate.value = selectedOptions[0].value + '-' + selectedOptions[1].value;
   showDatePicker.value = false;
   // 触发搜索
+  startTime.value = selectedOptions[0].value + '-' + selectedOptions[1].value + '-01';
+  const tmpDate = new Date(startTime.value);
+  endTime.value = formatDate2(tmpDate);
+  searchAccoutBooks();
 };
 const formatDate = (date: any) => `${date.getFullYear()}年${date.getMonth() + 1}月`;
 // 类型
@@ -145,6 +165,7 @@ const fieldValue = ref();
 const onFinish = ({ selectedOptions }: any) => {
   show1.value = false;
   fieldValue.value = selectedOptions.map((option: any) => option.name).join('/');
+  searchAccoutBooks();
 };
 </script>
 

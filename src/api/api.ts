@@ -4,52 +4,61 @@ import { request } from './axios'
  * @description -封装User类型的接口方法
  */
 export const BookStatus = new Map<number, string>();
-BookStatus.set(1, '未结清');
-BookStatus.set(2, '已结清');
+BookStatus.set(1, '已结清');
+BookStatus.set(2, '未结清');
 
 export const EnableStatus = new Map<number, string>();
 EnableStatus.set(0, '禁用');
 EnableStatus.set(1, '启用');
 
+export const BookTypeInCome = new Map<number, string>();
+BookTypeInCome.set(1, '批发');
+BookTypeInCome.set(2, '零售');
+
+
 /** 编辑新增通用 */
 export interface AccountEditKey {
     id?: number | null,
-    userId?: number,
+    incomeOrderId?:number | null,
+    userManagerId?: number,
     role?: string,
     op: string
 }
 // 账单列表类型声明
 export interface AccountBook {
-    id: number | null,
+    incomeOrderId: number | null,
+    type: number | null,
+    typeDesc: string,
     userId: number | null,
     username: string,
     mobile: string,
-    area: string,
-    areaCode: string,
-    areaDetail: string,
-    remark: string,
-    totalAmount: string | number,
-    payAmount: string | number,
+    totalMoney: string,
     status: number | null,
+    paidMoney: string,
+    unpaidMoney: string,
+    day: string,
+    remark: string,
     createDate: string,
-    bookType: number | null,
-    bookTypeDesc: string,
+    address: string,
     details: Vegetables[]
 }
 interface Vegetables {
-    name: string,
+    productTypeId: number | null,
+    productTypeName: string,
     weight: number | string,
-    amount: number | string
+    money: number | string
 }
 
 interface PageParams {
     pageNum: number,
     pageSize: number,
-    username: string,
-    mobile: string,
+    orderType: number | null,
+    name: string,
     status?: number,
-    createDate?: string
+    startTime?: string,
+    endTime?: string,
 }
+
 export class AccoutListService {       // 账单接口
     // 账单查询
     static async list(params: PageParams) {
@@ -78,41 +87,44 @@ export const accountUserStatusColumns = [
     { text: '禁用', value: 0 }
 ];
 export interface AccountUser {
-    userId: number | null,
-    username: string,
-    mobile: string,
-    area: string,
-    areaCode: string,
-    areaDetail: string,
-    status: number | null,
+    userManagerId: number | null,
+    name: string,
+    phone: string,
+    address: string,
+    remark: string,
+    enabled: number | null,
     type: number | null,
-    createDate: string
+    createTime: string
 }
 
-export class AccountUserService {     // 账单用户接口
+export class UserManageService {     // 账单用户接口
     // 用户登录
     static async login(params: object) {   // 接口三
         return request('/login', params, 'post')
     }
     // 用户查询
     static async list(params: object) {
-        return request('/api/accountbooks/accountuser/list', params, 'post')
+        return request('/api/accountbooks/userManage/page', params, 'post')
+    }
+     // 用户查询
+     static async getListByType(params: object) {
+        return request('/api/accountbooks/userManage/getListByType', params, 'post')
     }
     // 用户新增
     static async add(params: object) {
-        return request('/api/accountbooks/accountuser/add', params, 'post')
+        return request('/api/accountbooks/userManage/add', params, 'post')
     }
     // 用户修改
     static async edit(params: object) {
-        return request('/api/accountbooks/accountuser/edit', params, 'post')
+        return request('/api/accountbooks/userManage/edit', params, 'post')
     }
     // 用户删除
     static async delete(params: object) {
-        return request('/api/accountbooks/accountuser/delete', params, 'get')
+        return request('/api/accountbooks/userManage/delete', params, 'get')
     }
     // 用户详情
     static async detail(params: object) {
-        return request('/api/accountbooks/accountuser/detail', params, 'get')
+        return request('/api/accountbooks/userManage/detail', params, 'post')
     }
 
 }
@@ -181,5 +193,68 @@ export class MemberService {     // 管理会员接口
     // 用户名密码登录
     static async logout(params: object) {
         return request('/api/accountbooks/member/logout', params, 'post')
+    }
+
+    static async detail(params: object) {
+        return request('/api/accountbooks/member/detail', params, 'post');
+    }
+
+    // 头像上传
+    static async upload(params: object) {
+        return request('/api/accountbooks/member/upload', params, 'post');
+    }
+
+    // 用户编辑
+    static async edit(params: object) {
+        return request('/api/accountbooks/member/edit', params, 'post');
+    }
+}
+
+
+export class IncomeOrderService {       // 收入账单接口
+    // 账单查询
+    static async list(params: PageParams) {
+        return request('/api/accountbooks/incomeOrder/page', params, 'post')
+    }
+    // 账单新增
+    static async add(params: object) {
+        return request('/api/accountbooks/incomeOrder/add', params, 'post')
+    }
+    // 账单修改
+    static async edit(params: object) {
+        return request('/api/accountbooks/incomeOrder/update', params, 'post')
+    }
+    // 账单删除
+    static async delete(params: object) {
+        return request('/api/accountbooks/incomeOrder/delete', params, 'post')
+    }
+    // 账单详情
+    static async detail(params: object) {
+        return request('/api/accountbooks/incomeOrder/detail', params, 'post')
+    }
+}
+
+export interface BookType {
+    productTypeId: number | null,
+    type: string,
+    serialNum: number
+}
+
+export class BookTypeService {       // 商品条目
+    // 商品查询
+    static async list(params: object) {
+        return request('/api/accountbooks/productType/list', params, 'post')
+    }
+    // 商品新增
+    static async add(params: object) {
+        return request('/api/accountbooks/productType/add', params, 'post')
+    }
+    // 商品修改
+    static async edit(params: object) {
+        return request('/api/accountbooks/productType/edit', params, 'post')
+    }
+    // 商品删除
+    static async delete(params: object) {
+        return request('/api/accountbooks/productType/remove', params, 'post')
     }
 }

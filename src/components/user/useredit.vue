@@ -4,7 +4,7 @@ import { computed, reactive } from 'vue';
 import { ref, onMounted } from 'vue';
 import { showNotify, showToast } from 'vant';
 
-import { UserService, type User } from '@/api/api'
+import { MemberService, type User } from '@/api/api'
 
 // 挂载初始化
 onMounted(() => {
@@ -15,8 +15,8 @@ onMounted(() => {
 
 // 初始化个人信息
 const initUser = async (userId: number) => {
-    const res: any = await UserService.detail({ 'userId': userId });
-    if (res.data) {
+    const res: any = await MemberService.detail({ 'userId': userId });
+    if (res.data.data) {
         Object.assign(user, res.data);
         // 组件绑定input回显
         formShowFuc();
@@ -38,7 +38,7 @@ const formShowFuc = () => {
 }
 
 // 图片上传
-
+const avatorUrl = ref('');
 // 图片预览
 const images = ref([
     // { url: 'https://fastly.jsdelivr.net/npm/@vant/assets/leaf.jpeg' },
@@ -60,8 +60,9 @@ const onOversize = (file: any) => {
 const afterRead = async (file: any) => {
     // 将文件上传至服务器
     console.log(file);
-    let res: any = UserService.upload(file);
-    if (res.status === 200) {
+    let res: any = MemberService.upload(file);
+    if (res.data.code === 200) {
+        avatorUrl.value = res.data.data;
         showToast({
             type: 'success',
             message: '上传成功',
@@ -90,13 +91,13 @@ const onSubmit = (values: any) => {
 const userSubmit = async () => {
     console.log(user);
     const params = {
-        "userId": user.userId,
+        "memberId": user.userId,
         "username": user.username,
         "mobile": user.mobile,
         "nickName": user.nickname,
         "imageUrl": user.imageUrl
     }
-    let res: any = await UserService.edit(params)
+    let res: any = await MemberService.edit(params)
     // 编辑成功或失败
     // 关闭遮罩层
     overlayShow.value = false

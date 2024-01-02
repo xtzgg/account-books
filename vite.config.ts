@@ -20,8 +20,8 @@ export default defineConfig({
     proxy: {
       // with options
       '/api': {
-        target: 'http://accoutbook.natapp1.cc/api',
-        // target: 'http://localhost:8888',
+        // target: 'http://accoutbook.natapp1.cc/api',
+        target: 'http://localhost:8888',
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       }

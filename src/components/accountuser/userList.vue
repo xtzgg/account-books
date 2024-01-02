@@ -2,7 +2,7 @@
 import UserListItem from './userListItem.vue'
 import { computed, ref,reactive,onMounted} from 'vue'
 import 'vant/es/dialog/style';
-import { AccountUserService, type AccountUser } from '@/api/api'
+import { UserManageService, type AccountUser } from '@/api/api'
 import {useRouter,useRoute} from 'vue-router'
 
 
@@ -16,6 +16,7 @@ const total = ref(0)
 const mobile = ref('')
 const username = ref('')
 const remark = ref('')
+const keyword = ref('')
 // 搜索框
 const inputSearch = ref('')
 
@@ -62,22 +63,31 @@ const onRefresh = () => {
   // 重新加载数据
   load();
 };
+
+const  getType = ()=>{
+  if(props.role === 'customer'){
+      return 1; // 客户
+  } else if(props.role === 'cargo'){
+      return 2; // 供货人
+  } else {
+      return 3; // 工人
+  }
+}
 // 获取账单用户列表
 const accountUserList = ref<AccountUser[]>([]);
 const accountUserSelectFuc = async () => {
-  const res: any = await AccountUserService.list({
+  const res: any = await UserManageService.list({
     "pageNum": pageNum.value,
     "pageSize": pageSize.value,
-    "username": username.value,
-    "remark": remark.value,
-    "mobile": mobile.value
+    "keyword": keyword.value,
+    "type": getType()
   })
   // 追加
-  if(res.data.records){
-    res.data.records.forEach((element: AccountUser) => {
+  if(res.data.data.records){
+    res.data.data.records.forEach((element: AccountUser) => {
       accountUserList.value.push(element);
     });
-    total.value = res.data.total;
+    total.value = res.data.data.total;
   }
 }
 // 添加

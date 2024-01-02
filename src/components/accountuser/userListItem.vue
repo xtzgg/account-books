@@ -4,7 +4,7 @@ import { computed, ref, defineProps, defineEmits, type ComponentInternalInstance
 import { showConfirmDialog, showToast } from 'vant';
 import { useRouter, useRoute } from 'vue-router'
 
-import { AccountUserService, type AccountUser,EnableStatus } from '@/api/api';
+import { UserManageService, type AccountUser,EnableStatus } from '@/api/api';
 
 // 路由对象
 const router = useRouter()
@@ -24,7 +24,7 @@ const editAccountUser = (i: number) => {
   const accountUser = props.accountUserList[i];
   router.push({
     path: '/accountuseredit',
-    query: { 'userId': accountUser.userId, 'op': 'edit','role': props.role }
+    query: { 'userManagerId': accountUser.userManagerId, 'op': 'edit','role': props.role }
   })
 }
 
@@ -54,8 +54,8 @@ const beforeClose = (position: string, index: number) => {
 
 const deleteAccountUser = async (i: number) => {
   const accountBook = props.accountUserList[i];
-  const res: any = await AccountUserService.delete({
-    'userId': accountBook.userId
+  const res: any = await UserManageService.delete({
+    'userManagerId': accountBook.userManagerId
   })
   if(res.status == 200 && res.data.code == 200) {
     showToast({
@@ -79,21 +79,21 @@ const container = ref();
 </script>
 
 <template>
-  <van-cell v-for="(item, index) in accountUserList" style="padding: 0;" :to="'/accountuserdetail?userId='+ item.userId + '&role=' + props.role">
+  <van-cell v-for="(item, index) in accountUserList" style="padding: 0;" :to="'/accountuserdetail?userManagerId='+ item.userManagerId + '&role=' + props.role">
     <van-swipe-cell  class="van_list_s">
       <div class="item"  ref="container" >
         <!-- 粘性状态标识 -->
         <div style="position: absolute;right: 0.6rem;">
-          <div :class="['triangle2',item.status === 0 ? 'triangle2_error':'']" style="color:black">{{ item.status == null ? '' :  
-            EnableStatus.get(item.status)}}</div>
-          <div :class="['triangle',item.status === 0 ? 'triangle_error':'']"></div>
+          <div :class="['triangle2',item.enabled === 0 ? 'triangle2_error':'']" style="color:black">{{ item.enabled == null ? '' :  
+            EnableStatus.get(item.enabled == null ? 0 : item.enabled)}}</div>
+          <div :class="['triangle',item.enabled === 0 ? 'triangle_error':'']"></div>
         </div>
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
             姓名：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ item.username }}
+            {{ item.name }}
           </van-col>
         </van-row>
         <van-row :gutter="10">
@@ -101,23 +101,23 @@ const container = ref();
             电话：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ item.mobile }}
+            {{ item.phone }}
           </van-col>
         </van-row>
-        <van-row :gutter="10">
+        <!-- <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
             地址：
           </van-col>
           <van-col :span="width_right" class="col_right">
             {{ item.area == null ? '' : item.area}}
           </van-col>
-        </van-row>
+        </van-row> -->
         <van-row :gutter="10">
           <van-col :span="width_left" class="col_left">
             详细地址：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            <van-text-ellipsis style="z-index:2" :content="item.areaDetail == null ? '' : item.areaDetail"
+            <van-text-ellipsis style="z-index:2" :content="item.address == null ? '' : item.address"
                 />
           </van-col>
         </van-row>
@@ -126,7 +126,7 @@ const container = ref();
             创建日期：
           </van-col>
           <van-col :span="width_right" class="col_right">
-            {{ item.createDate }}
+            {{ item.createTime }}
           </van-col>
         </van-row>
       </div>

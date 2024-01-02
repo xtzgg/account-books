@@ -19,7 +19,7 @@ onMounted(() => {
 // const onClickTab = ({ title }: any) => showToast(title);
 
 const accountEditKey = ref<AccountEditKey>({
-    id: Number(route.query.id),
+    incomeOrderId: Number(route.query.incomeOrderId),
     op: route.query.op + ''
 })
 // 返回上一级
